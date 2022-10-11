@@ -11,11 +11,6 @@ public class BraveBird extends PhysicalMove {
     }
 
     @Override
-    protected void applySelfDamage(Pokemon pokemon, double v) {
-        //надо реализовать получение 1/3 от нанесённого дамага
-    }
-
-    @Override
     protected String describe(){
         return "использует атаку Brave Bird";
     }
