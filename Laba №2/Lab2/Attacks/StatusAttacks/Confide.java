@@ -1,11 +1,11 @@
 package Lab2.Attacks.StatusAttacks;
 
-import ru.ifmo.se.pokemon.PhysicalMove;
+import ru.ifmo.se.pokemon.StatusMove;
 import ru.ifmo.se.pokemon.Pokemon;
 import ru.ifmo.se.pokemon.Stat;
 import ru.ifmo.se.pokemon.Type;
 
-public class Confide extends PhysicalMove {
+public class Confide extends Status.Move {
     public Confide(){
         super(Type.NORMAL, 0, 1);
     }
