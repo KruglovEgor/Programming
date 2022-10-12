@@ -1,7 +1,6 @@
 package Lab2.Attacks.PhysicalAttacks;
 
 import ru.ifmo.se.pokemon.PhysicalMove;
-import ru.ifmo.se.pokemon.Pokemon;
 import ru.ifmo.se.pokemon.Type;
 
 public class BraveBird extends PhysicalMove {
