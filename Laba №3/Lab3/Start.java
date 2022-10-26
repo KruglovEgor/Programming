@@ -21,7 +21,7 @@ public class Start {
         story(shpuntik, smekailo, visitors, machine);
     }
 
-    public static void story(Shpuntik shpuntik, Smekailo smekailo, Visitors visitors, Machine machine){
+    private static void story(Shpuntik shpuntik, Smekailo smekailo, Visitors visitors, Machine machine){
         System.out.println(smekailo);
         System.out.println(smekailo.show());
         System.out.println(visitors);
