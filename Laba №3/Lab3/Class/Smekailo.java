@@ -1,25 +1,11 @@
 package Lab3.Class;
 
 import Lab3.Abstract.Person;
-import Lab3.Interface.forSmekailo;
+import Lab3.Interface.CanPress;
+import Lab3.Interface.CanShow;
+import Lab3.Interface.LooksLike;
 
-public class Smekailo extends Person implements forSmekailo {
-    protected String name = "Смекайло";
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String toString() {
-        return getName()+":";
-    }
+public class Smekailo extends Person implements CanShow, CanPress, LooksLike {
 
     @Override
     public String show() {
@@ -28,7 +14,17 @@ public class Smekailo extends Person implements forSmekailo {
 
     @Override
     public void pressButton(Machine machine) {
-        System.out.println("А теперь, я нажму на кнопку.");
+        System.out.println("А теперь, я нажму на кнопку");
         machine.transform();
+    }
+
+    @Override
+    public String sit() {
+        return "сел самым обычным способом";
+    }
+
+    @Override
+    public String describe() {
+        return "мальчик среднего роста в бордовом костюме";
     }
 }

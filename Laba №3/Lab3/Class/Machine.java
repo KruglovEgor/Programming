@@ -1,8 +1,11 @@
 package Lab3.Class;
 
-public class Machine {
+import Lab3.Interface.LooksLike;
+
+public class Machine implements LooksLike {
     private Conditions condition = Conditions.OFF;
 
+    @Override
     public String describe(){
         if (equals(1)) return "небольшой столик со стульчиком";
         else return "какое-то неуклюжее сооружение, напоминавшее не то сложенную палатку, не то зонтик больших размеров";

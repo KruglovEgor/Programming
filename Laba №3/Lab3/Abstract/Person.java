@@ -3,8 +3,17 @@ package Lab3.Abstract;
 public abstract class Person {
     protected String name;
 
-    public abstract void setName(String name);
-    public abstract String getName();
+    public abstract String sit();
+    public void setName(String name){
+        this.name = name;
+    }
+            ;
+    public String getName(){
+        return this.name;
+    }
 
-    public abstract String toString();
+    public String toString(){
+        return this.getName() + ":";
+    }
+
 }

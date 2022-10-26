@@ -1,33 +1,28 @@
 package Lab3.Class;
 
 import Lab3.Abstract.Person;
-import Lab3.Interface.forShpuntik;
+import Lab3.Interface.CanSee;
+import Lab3.Interface.LooksLike;
 
-public class Shpuntik extends Person implements forShpuntik {
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String toString() {
-        return getName()+":";
-    }
-
-    @Override
-    public String twistLegs() {
-        return "*скрутил ноги самым неестественным способом*";
-    }
+public class Shpuntik extends Person implements CanSee, LooksLike {
 
     @Override
     public String sit() {
-        return "*сел за стол*";
+        return "*сел за стол, скрутив ноги самым неестественным способом*";
     }
 
+    @Override
+    public String look() {
+        return "тоже смотрел";
+    }
+
+    @Override
+    public String see() {
+        return "увидел это";
+    }
+
+    @Override
+    public String describe() {
+        return "маленький весёлый мальчик";
+    }
 }
