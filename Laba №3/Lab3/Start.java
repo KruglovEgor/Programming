@@ -22,15 +22,15 @@ public class Start {
     }
 
     public static void story(Shpuntik shpuntik, Smekailo smekailo, Visitors visitors, Machine machine){
-        System.out.println(smekailo.toString());
+        System.out.println(smekailo);
         System.out.println(smekailo.show());
-        System.out.println(visitors.toString());
+        System.out.println(visitors);
         System.out.println(visitors.look() + " " + visitors.see() + " " + machine.describe());
-        System.out.println(shpuntik.toString());
+        System.out.println(shpuntik);
         System.out.println("*" + shpuntik.look() + " и " + shpuntik.see() + "*");
-        System.out.println(smekailo.toString());
+        System.out.println(smekailo);
         smekailo.pressButton(machine);
-        System.out.println(shpuntik.toString());
+        System.out.println(shpuntik);
         System.out.println("*" + shpuntik.see() + "*");
         System.out.println(shpuntik.sit());
     }
