@@ -19,7 +19,7 @@ public class Machine implements LooksLike {
 
     public void transform(){
         condition = Conditions.ON;
-        System.out.println("Машина превратилась в " + describe());
+        System.out.println("*Машина превратилась в " + describe() + "*");
     }
 
     @Override
