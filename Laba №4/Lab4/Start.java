@@ -6,8 +6,8 @@ import Lab4.Interface.SunMoving;
 public class Start {
     public static void main(String[] args){
 
-        //TODO make static and non-static inner classes
-        //Already have anonyme class - here SunMoving and local class Disk in Case
+        //TODO Make exceptions
+        //Already have: anonyme class - here SunMoving, local class - Disk in Case, non-static inner class - Button in Creation, static inner class - getSpecification in SolderingIron
 
         Shpuntik shpuntik = new Shpuntik();
         shpuntik.setName("Шпунтик");
@@ -93,7 +93,7 @@ public class Start {
 
         System.out.println(friends);
         System.out.println("*" + friends.seeWhat() + sun.goDown() + "*");
-        System.out.println("*" + friends.getObject("паяльник") + "*");
+        System.out.println("*" + friends.getObject(SolderingIron.getSpecification.getName()) + "*");
         System.out.println("*" + friends.sayGodBye() + "*");
         System.out.println("*" + friends.goOut() + "*");
     }

@@ -4,7 +4,16 @@ import Lab4.Interface.LooksLike;
 import Lab4.Enum.Conditions;
 
 public abstract class Creation implements LooksLike {
-    protected Conditions condition = Conditions.OFF;
+
+    private Conditions condition = Conditions.OFF;
+
+    protected class Button{
+        public void pushButton(){
+            condition = Conditions.ON;
+        }
+    }
+
+    protected Button button = new Button();
 
     @Override
     public int hashCode() {

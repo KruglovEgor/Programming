@@ -1,9 +1,10 @@
 package Lab4.Class;
 
 import Lab4.Abstract.Creation;
-import Lab4.Enum.Conditions;
+
 
 public class Machine extends Creation{
+
 
     @Override
     public String describe(){
@@ -12,7 +13,7 @@ public class Machine extends Creation{
     }
 
     public void transform(){
-        condition = Conditions.ON;
+        button.pushButton();
         System.out.println("*Машина превратилась в " + describe() + "*");
     }
 
