@@ -1,13 +1,16 @@
 package Lab4;
 
 import Lab4.Class.*;
+import Lab4.Exceptions.ForeignLanguageException;
 import Lab4.Interface.SunMoving;
 
 public class Start {
-    public static void main(String[] args){
+    public static void main(String[] args) throws ForeignLanguageException {
 
-        //TODO Make exceptions
-        //Already have: anonyme class - here SunMoving, local class - Disk in Case, non-static inner class - Button in Creation, static inner class - getSpecification in SolderingIron
+        //TODO Make one more exception
+        //Already have: anonyme class - here SunMoving, local class - Disk in Case,
+        // non-static inner class - Button in Creation, static inner class - getSpecification in SolderingIron,
+        // (un)checked exception - ForeignLanguageException
 
         Shpuntik shpuntik = new Shpuntik();
         shpuntik.setName("Шпунтик");
@@ -44,14 +47,19 @@ public class Start {
         story(shpuntik, smekailo, visitors, machine, someone, friends, case_, situation, sun);
     }
 
-    private static void story(Shpuntik shpuntik, Smekailo smekailo, Visitors visitors, Machine machine, Someone someone, Friends friends, Case case_, Situation situation, SunMoving sun){
+    private static void story(Shpuntik shpuntik, Smekailo smekailo, Visitors visitors, Machine machine, Someone someone, Friends friends, Case case_, Situation situation, SunMoving sun) throws ForeignLanguageException {
         System.out.println(smekailo);
         System.out.println("*" + case_.spin() + "*");
         smekailo.pressButton(case_);
         System.out.println("*" + situation.getSilent() + "*");
         System.out.println(" ");
 
-        System.out.println(someone.getName() + " " + someone.say("Под столом"));
+        try {
+            System.out.println(someone.getName() + " " + someone.say("Под столом"));
+        } catch (ForeignLanguageException e){
+            System.out.println(someone.getName() + " " + someone.say("*Что-то на иностранном*"));
+        }
+
         System.out.println("*" + situation.getLoud() + "*");
         System.out.println(someone);
         System.out.println(someone.laugh());
@@ -65,7 +73,12 @@ public class Start {
         System.out.println(someone.parodySheep());
         System.out.println(" ");
 
-        System.out.println(someone.getName() + " " + someone.say("Пустите меня, я покричу ослом"));
+        try {
+            System.out.println(someone.getName() + " " + someone.say("Пустите меня, я покричу ослом"));
+        } catch (ForeignLanguageException e){
+            System.out.println(someone.getName() + " " + someone.say("*Что-то на иностранном*"));
+        }
+
         System.out.println(someone);
         System.out.println(someone.parodyDonkey());
         System.out.println(someone);
@@ -93,7 +106,7 @@ public class Start {
 
         System.out.println(friends);
         System.out.println("*" + friends.seeWhat() + sun.goDown() + "*");
-        System.out.println("*" + friends.getObject(SolderingIron.getSpecification.getName()) + "*");
+        System.out.println("*" + friends.getObject(SolderingIron.About.getName()) + "*");
         System.out.println("*" + friends.sayGodBye() + "*");
         System.out.println("*" + friends.goOut() + "*");
     }

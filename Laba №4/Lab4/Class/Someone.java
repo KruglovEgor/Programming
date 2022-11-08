@@ -1,6 +1,7 @@
 package Lab4.Class;
 
 import Lab4.Abstract.Person;
+import Lab4.Exceptions.ForeignLanguageException;
 import Lab4.Interface.CanProduceSounds;
 import Lab4.Interface.CanTalk;
 
@@ -20,10 +21,7 @@ public class Someone extends Person implements CanProduceSounds, CanTalk {
         return "Ха-ха-ха";
     }
 
-    @Override
-    public String say(String txt) {
-        return "сказал: " + '"' + txt + '"';
-    }
+
 
     @Override
     public String makeNoise() {

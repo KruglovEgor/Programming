@@ -20,10 +20,10 @@ public class SolderingIron {
     }
 
     public String getSizes(){
-        return this.size_x + "x" + size_y + "x" + size_z;
+        return size_x + "x" + size_y + "x" + size_z;
     }
 
-    public static class getSpecification{
+    public static class About{
         public static String getName(){
             return name;
         }
@@ -32,6 +32,4 @@ public class SolderingIron {
             return material;
         }
     }
-
-
 }

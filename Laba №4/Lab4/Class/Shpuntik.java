@@ -1,6 +1,7 @@
 package Lab4.Class;
 
 import Lab4.Abstract.Person;
+import Lab4.Exceptions.ForeignLanguageException;
 import Lab4.Interface.CanSee;
 import Lab4.Interface.CanTalk;
 import Lab4.Interface.FeelPain;
@@ -43,8 +44,4 @@ public class Shpuntik extends Person implements CanSee, LooksLike, FeelPain, Can
         return "почувствовал зверскую боль";
     }
 
-    @Override
-    public String say(String txt) {
-        return "сказал " + txt;
-    }
 }
