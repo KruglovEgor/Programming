@@ -2,32 +2,54 @@ package Lab4;
 
 import Lab4.Class.*;
 import Lab4.Exceptions.ForeignLanguageException;
+import Lab4.Exceptions.TooShortNameException;
 import Lab4.Interface.SunMoving;
 
 public class Start {
-    public static void main(String[] args) throws ForeignLanguageException {
+    public static void main(String[] args) throws ForeignLanguageException, TooShortNameException {
 
-        //TODO Make one more exception
         //Already have: anonyme class - here SunMoving, local class - Disk in Case,
         // non-static inner class - Button in Creation, static inner class - getSpecification in SolderingIron,
-        // (un)checked exception - ForeignLanguageException
+        // unchecked exception - ForeignLanguageException, checked exception - TooShortNameException
 
         Shpuntik shpuntik = new Shpuntik();
-        shpuntik.setName("Шпунтик");
+        try {
+            shpuntik.setName("Шпунтик");
+        } catch (TooShortNameException e){
+            shpuntik.setName("Маленький весёлый мальчик");
+        }
+
 
         Smekailo smekailo = new Smekailo();
-        smekailo.setName("Смекайло");
+        try {
+            smekailo.setName("Смекайло");
+        } catch (TooShortNameException e){
+            smekailo.setName("Серьёзный мальчик среднего роста");
+        }
 
         Machine machine = new Machine();
 
         Visitors visitors = new Visitors();
-        visitors.setName("Посетители");
+        try {
+            visitors.setName("Посетители");
+        } catch (TooShortNameException e){
+            visitors.setName("Толпа людей");
+        }
 
         Someone someone = new Someone();
-        someone.setName("Кто-то");
+        try {
+            someone.setName("Кто-то");
+        } catch (TooShortNameException e){
+            someone.setName("Не ясно кто");
+        }
+
 
         Friends friends = new Friends();
-        friends.setName("Друзья");
+        try {
+            friends.setName("Друзья");
+        } catch (TooShortNameException e){
+            friends.setName("Два паренька");
+        }
 
         Case case_ = new Case();
         Situation situation = new Situation();
