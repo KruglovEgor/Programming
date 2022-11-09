@@ -1,5 +1,6 @@
 package Lab4.Abstract;
 
+import Lab4.Exceptions.DidntActivateException;
 import Lab4.Interface.LooksLike;
 import Lab4.Enum.Conditions;
 
@@ -8,8 +9,12 @@ public abstract class Creation implements LooksLike {
     private Conditions condition = Conditions.OFF;
 
     protected class Button{
-        public void pushButton(){
-            condition = Conditions.ON;
+        public void pushButton() throws DidntActivateException {
+            if (Math.random() >= 0.5){
+                condition = Conditions.ON;
+            }
+            else
+                throw new DidntActivateException("Машина не запустилась\n Видимо сегодня посетители не увидят представление :-(");
         }
     }
 

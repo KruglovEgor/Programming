@@ -12,6 +12,7 @@ public class Start {
         // non-static inner class - Button in Creation, static inner class - getSpecification in SolderingIron,
         // unchecked exception - ForeignLanguageException, checked exception - TooShortNameException
 
+        // при нажатии кнопки происходит не то что нужно - runtime
         Shpuntik shpuntik = new Shpuntik();
         try {
             shpuntik.setName("Шпунтик");
