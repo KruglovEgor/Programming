@@ -1,0 +1,40 @@
+public class Prog_lab1 {
+    public static void main(String[] args){
+        int[] c = new int[25];
+        int i = 0, j = 0;
+        for (j = 25; j >= 1; j -= 2) {
+            c[i] = j;
+            System.out.print(c[i] + " ");
+            i++;
+        }
+
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println(" ");
+
+        double[] x = new double[16];
+        for (i = 0; i < 16; i++){
+            x[i] = Math.random()*14 - 10;
+            System.out.print(x[i] + " ");
+        }
+
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println(" ");
+
+
+        int m = 13, n = 16;
+        double[][] a = new double[m][n];
+        for (i = 0; i < m; i++){
+            for (j = 0; j < n; j++){
+                if (c[i] == 17) a[i][j] = Math.pow(Math.E, Math.pow(Math.atan((x[j]-3)/14)*(2.0/3 - Math.sin(x[j])),2));
+                else if (c[i] == 1 || c[i] == 3 || c[i] == 7 || c[i] == 13 || c[i] == 19 || c[i] == 25) a[i][j] = Math.cos(Math.log((Math.abs(x[j]) + 1)/4));
+                else a[i][j] = Math.pow(Math.cos(Math.log(Math.acos((x[j]-3)/14))), 0.5/(Math.tan(Math.pow((Math.atan((x[j]-3)/14) - Math.PI)/Math.atan((x[j]-3)/14),Math.pow(x[j]/2, 3))) - 1));
+                System.out.print(a[i][j] + " ");
+            }
+            System.out.println(" ");
+        }
+
+        
+    }
+}
