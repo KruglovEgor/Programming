@@ -1,0 +1,48 @@
+[
+  {
+    "id": 2.0,
+    "name": "Leon",
+    "coordinates": [
+      6.56,
+      583.425
+    ],
+    "creationDate": [
+      2023.0,
+      2.0,
+      24.0,
+      20.0,
+      11.0,
+      0.0
+    ],
+    "realHero": false,
+    "hasToothpick": true,
+    "impactSpeed": 35855.0,
+    "soundtrackName": "Zvezdnoe Leto",
+    "minutesOfWaiting": 3.24,
+    "mood": "SADNESS",
+    "car": "bmw x6"
+  },
+  {
+    "id": 1.0,
+    "name": "Bob",
+    "coordinates": [
+      2.94,
+      32.564
+    ],
+    "creationDate": [
+      2023.0,
+      2.0,
+      24.0,
+      20.0,
+      10.0,
+      30.0
+    ],
+    "realHero": false,
+    "hasToothpick": true,
+    "impactSpeed": 225.0,
+    "soundtrackName": "Counting stars",
+    "minutesOfWaiting": null,
+    "mood": "SADNESS",
+    "car": "rhino logan"
+  }
+]
