@@ -1,0 +1,17 @@
+{
+  "help": [0],
+  "info": [0],
+  "show": [0],
+  "add": [1, "unit Map"],
+  "update": [2, "id Int", "unit Map"],
+  "remove_by_id": [1, "id Int"],
+  "clear": [0],
+  "execute_script": [1, "path Path"],
+  "exit": [0],
+  "remove_first": [0],
+  "remove_head": [0],
+  "add_if_max": [1, "unit Map"],
+  "count_by_minutes_of_waiting": [1, "minutesOfWaiting Double"],
+  "count_less_than_mood": [1, "mood Mood"],
+  "print_ascending": [0]
+}
