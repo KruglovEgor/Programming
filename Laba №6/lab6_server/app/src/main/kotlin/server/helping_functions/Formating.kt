@@ -28,7 +28,7 @@ fun convertJSONtoMapOfStringAndAny(txt: String) :Map<String, Any?> {
  *
  * @param data - LinkedList<*> for writing in file
  */
-fun writeInJSONFile(pathToFile: String, data: LinkedList<*>) {
+fun writeInJSONFile(pathToFile: String, data: List<*>) {
     val gson = GsonBuilder().serializeNulls().setPrettyPrinting().create()
     val jsonString = gson.toJson(data)
     try  {
@@ -48,4 +48,16 @@ fun writeInJSONFile(pathToFile: String, data: LinkedList<*>) {
 fun convertMapToJSON (map : Map<String, Any?>?) : String{
     val gson = GsonBuilder().serializeNulls().create()
     return gson.toJson(map)
+}
+
+fun readFromFileOrCreateFile(fileName : String) : String{
+    val file = File(fileName)
+    if (file.exists()){
+        return file.readText()
+    }
+    else{
+        file.createNewFile()
+        return ""
+    }
+
 }

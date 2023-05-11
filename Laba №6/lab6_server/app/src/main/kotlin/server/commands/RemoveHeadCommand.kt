@@ -1,8 +1,8 @@
 package commands
 
 import base_classes.HumanBeing
+import exceptions.NoSuchIdException
 import listOfHumanBeing
-import helping_functions.pullInDataToSend
 
 class RemoveHeadCommand(): Command {
 
@@ -16,21 +16,24 @@ class RemoveHeadCommand(): Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         try {
             val unitToRemove = listOfHumanBeing.stream()
                 .sorted(Comparator.comparing(HumanBeing::name))
                 .findFirst()
                 .orElse(null)
             if(unitToRemove != null){
-                pullInDataToSend(unitToRemove)
+                result = unitToRemove.toString()
                 val mapOfId = mapOf("id" to unitToRemove.id)
                 val removeById = RemoveByIdCommand()
                 removeById.execute(mapOfId)
             }
+            else result = "Error ${NoSuchIdException().message.toString()}"
         } catch (e : Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }

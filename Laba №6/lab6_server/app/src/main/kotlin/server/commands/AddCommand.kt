@@ -4,7 +4,6 @@ import currentId
 import listOfData
 import listOfHumanBeing
 import base_classes.HumanBeing
-import helping_functions.pullInDataToSend
 
 
 class AddCommand() : Command {
@@ -20,20 +19,19 @@ class AddCommand() : Command {
 
         var success = true
         var message = ""
+        var result: String
         try {
             val unit = HumanBeing(map.filterKeys { it != "id" })
             currentId += 1
             listOfData.add(unit.makeMapByUnit())
             listOfHumanBeing.add(unit)
+            result = "Success"
         } catch (e: Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
+
         }
-        if(success){
-            pullInDataToSend("Success")
-        } else {
-            pullInDataToSend("Error $message")
-        }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }

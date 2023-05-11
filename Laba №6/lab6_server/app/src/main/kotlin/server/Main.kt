@@ -4,6 +4,7 @@ import commands.SaveCommand
 import helping_functions.convertJSONtoLinkedListOfMutableMapOfStringAndAny
 import helping_functions.convertJSONtoMapOfStringAndAny
 import helping_functions.convertMapToJSON
+import helping_functions.readFromFileOrCreateFile
 import interactive.getClassesOfCommands
 import interactive.getParametersOfCommands
 import java.time.LocalDateTime
@@ -27,12 +28,21 @@ var dataToSend = ""
 var ongoing = true
 
 fun main(){
-    val inputStream = object {}.javaClass.getResourceAsStream("/Data.json")
-    val dataFromFile = inputStream.bufferedReader().use { it.readText() }
-    inputStream.close()
-    listOfData = convertJSONtoLinkedListOfMutableMapOfStringAndAny(dataFromFile)
-
-    makeListOfHumanBeing()
+    val data = readFromFileOrCreateFile("Data.json")
+    if (data.isEmpty()){
+        listOfData = LinkedList<MutableMap<String, Any?>>()
+        listOfHumanBeing = LinkedList<HumanBeing>()
+    }
+    else{
+        try {
+            listOfData = convertJSONtoLinkedListOfMutableMapOfStringAndAny(data)
+            makeListOfHumanBeing()
+        } catch (e : Exception){
+            println(e.message)
+            listOfData = LinkedList<MutableMap<String, Any?>>()
+            listOfHumanBeing = LinkedList<HumanBeing>()
+        }
+    }
     startServer()
 }
 
@@ -96,12 +106,13 @@ fun execCommand(clientAddress: InetSocketAddress, serverSocket: DatagramSocket, 
     try {
         invoker.setCommand(getClassesOfCommands()[message["command"]]!!)
         val result = invoker.executeCommand(message["params"] as Map<String, Any?>)
-        map["result"] = dataToSend
         map["success"] = result.success
         map["message"] = result.message
+        map["result"] = result.result
     } catch (e: Exception){
         map["success"] = false
         map["message"] = e.message
+        map["result"] = "Error $message"
     }
     val responseData = convertMapToJSON(map).toByteArray()
     val responsePacket = DatagramPacket(responseData, responseData.size, clientAddress.address, clientAddress.port)
@@ -117,12 +128,13 @@ fun startReadingFromConsole(){
             if (input == "save"){
                 val saveCommand = SaveCommand()
                 val result = saveCommand.execute(mapOf("1" to 1))
-                println("${result.success} ${result.message}")
+                println("Saved: ${result.result}")
             }
             else if(input == "exit"){
                 ongoing = false
                 val saveCommand = SaveCommand()
-                saveCommand.execute(mapOf("1" to 1))
+                val result = saveCommand.execute(mapOf("1" to 1))
+                println("Saved: ${result.result}")
                 exitProcess(1)
             }
             else{

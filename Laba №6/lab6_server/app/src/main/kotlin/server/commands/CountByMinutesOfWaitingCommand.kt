@@ -1,7 +1,6 @@
 package commands
 
 import listOfHumanBeing
-import helping_functions.pullInDataToSend
 
 class CountByMinutesOfWaitingCommand() : Command {
 
@@ -26,13 +25,15 @@ class CountByMinutesOfWaitingCommand() : Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         try {
-            pullInDataToSend(getCountByMinutesOfWaiting(map["minutesOfWaiting"] as Double))
+            result = (getCountByMinutesOfWaiting(map["minutesOfWaiting"] as Double)).toString()
         } catch (e: Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 
 }

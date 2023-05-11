@@ -3,9 +3,7 @@ package commands
 import listOfHumanBeing
 import base_classes.HumanBeing
 import exceptions.NoSuchIdException
-import helping_functions.pullInDataToSend
 import java.util.LinkedList
-import java.util.stream.Collector
 import java.util.stream.Collectors
 
 class UpdateCommand() : Command {
@@ -29,36 +27,28 @@ class UpdateCommand() : Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         val id = (map["id"] as Number).toInt()
         if (checkIfIdExists(id)){
             try {
-//                for (unit : HumanBeing in listOfHumanBeing){
-//                    if(unit.id == map["id"]){
-//                        val newUnit = HumanBeing(map)
-//                        listOfHumanBeing.add(newUnit)
-//                        listOfHumanBeing.remove(unit)
-//                        break
-//                    }
-//                }
                 val newUnit = HumanBeing(map)
                 listOfHumanBeing = listOfHumanBeing.stream()
                     .map { if (it.id == id) newUnit else it}
                     .collect(Collectors.toCollection { LinkedList<HumanBeing>() })
+                result = "Success"
             } catch (e: Exception){
                 success = false
                 message = e.message.toString()
+                result = "Error $message"
             }
         }
         else {
             success = false
             message = NoSuchIdException().message.toString()
+            result = "Error $message"
         }
-        if(success){
-            pullInDataToSend("Success")
-        } else {
-            pullInDataToSend("Error $message")
-        }
-        return Result(success, message)
+
+        return Result(success, message, result)
     }
 
 }

@@ -1,5 +1,6 @@
 package commands
 
+import helping_functions.writeInJSONFile
 import listOfHumanBeing
 import java.util.*
 import listOfData
@@ -18,22 +19,19 @@ class SaveCommand() : Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         try {
             val list = LinkedList<MutableMap<String, Any?>>()
             for (unit in listOfHumanBeing){ list.add(unit.makeMapByUnit())}
-            val resourceUrl = object {}.javaClass.getResource("/resources/Data.json")
-            println(resourceUrl)
-            println(list)
-            val file = File(resourceUrl.toURI())
-            val outputStream = FileOutputStream(file)
-            outputStream.write(list.toString().toByteArray())
-            outputStream.close()
+            writeInJSONFile("Data.json", list)
             listOfData = list
+            result = "Success"
         } catch (e : Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
 
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }

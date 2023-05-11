@@ -1,8 +1,6 @@
 package commands
 
-import helping_functions.pullInDataToSend
 import listOfHumanBeing
-import kotlin.math.max
 
 class AddIfMaxCommand() : Command {
 
@@ -16,6 +14,7 @@ class AddIfMaxCommand() : Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         try {
             val maxImpactSpeed : Long = listOfHumanBeing.stream()
                 .mapToLong {it.impactSpeed}
@@ -25,15 +24,12 @@ class AddIfMaxCommand() : Command {
                 val addCommand = AddCommand()
                 addCommand.execute(map)
             }
+            result = "Success"
         } catch (e : Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
-        if(success){
-            pullInDataToSend("Success")
-        } else {
-            pullInDataToSend("Error $message")
-        }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }

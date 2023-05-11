@@ -2,7 +2,6 @@ package commands
 
 import listOfHumanBeing
 import base_classes.Mood
-import helping_functions.pullInDataToSend
 
 class CountLessThanMoodCommand(): Command {
 
@@ -27,12 +26,14 @@ class CountLessThanMoodCommand(): Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         try {
-            pullInDataToSend(getCountLessThanMood(map["Mood"] as Mood))
+            result = getCountLessThanMood(map["Mood"] as Mood).toString()
         } catch (e : Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }

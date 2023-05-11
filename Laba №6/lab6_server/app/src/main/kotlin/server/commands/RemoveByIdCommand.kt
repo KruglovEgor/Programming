@@ -2,9 +2,7 @@ package commands
 
 import listOfData
 import listOfHumanBeing
-import base_classes.HumanBeing
 import exceptions.NoSuchIdException
-import helping_functions.pullInDataToSend
 
 class RemoveByIdCommand(): Command {
 
@@ -14,13 +12,6 @@ class RemoveByIdCommand(): Command {
      * @return 'true' if unit with such id exists (delete him) and 'false' if not
      */
     private fun  checkIfIdExistsThenRemove(id: Int) :Boolean{
-//        for(unit : HumanBeing in listOfHumanBeing){
-//            if(unit.id == id) {
-//                listOfHumanBeing.remove(unit)
-//                return true
-//            }
-//        }
-//        return false
         return listOfHumanBeing.removeIf { it.id == id }
     }
 
@@ -34,28 +25,25 @@ class RemoveByIdCommand(): Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         val id = (map["id"] as Number).toInt()
         val removed = checkIfIdExistsThenRemove(id)
         if (removed){
             try {
-               listOfData.removeIf { it["id"] == id }
+                listOfData.removeIf { it["id"] == id }
+                result = "Success"
             } catch (e: Exception){
                 success = false
                 message = e.message.toString()
+                result = "Error $message"
             }
         }
         else {
             success = false
-                message = NoSuchIdException().message.toString()
+            message = NoSuchIdException().message.toString()
+            result = "Error $message"
         }
-
-
-        if(success){
-            pullInDataToSend("Success")
-        } else {
-            pullInDataToSend("Error $message")
-        }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 
 }

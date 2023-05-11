@@ -2,7 +2,6 @@ package commands
 
 import base_classes.HumanBeing
 import listOfHumanBeing
-import helping_functions.pullInDataToSend
 import java.util.stream.Collectors
 
 class PrintAscendingCommand() : Command {
@@ -17,16 +16,17 @@ class PrintAscendingCommand() : Command {
     override fun execute(map: Map<String, Any?>) : Result {
         var success = true
         var message = ""
+        var result: String
         try {
-            val txt = listOfHumanBeing.stream()
+            result = listOfHumanBeing.stream()
                 .sorted(Comparator.comparing { it.name })
                 .map(HumanBeing::toString)
                 .collect(Collectors.joining())
-            pullInDataToSend(txt)
         } catch (e : Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }

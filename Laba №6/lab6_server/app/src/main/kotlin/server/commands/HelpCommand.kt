@@ -1,6 +1,5 @@
 package commands
 
-import helping_functions.pullInDataToSend
 
 class HelpCommand() : Command {
 
@@ -26,12 +25,14 @@ class HelpCommand() : Command {
     override fun execute(map: Map<String, Any?>): Result {
         var success = true
         var message = ""
+        var result: String
         try {
-            pullInDataToSend(getHelp())
+            result = getHelp()
         } catch (e: Exception){
             success = false
             message = e.message.toString()
+            result = "Error $message"
         }
-        return Result(success, message)
+        return Result(success, message, result)
     }
 }
