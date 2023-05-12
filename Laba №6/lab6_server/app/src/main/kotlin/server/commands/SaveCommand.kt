@@ -1,16 +1,14 @@
-package commands
+package server.commands
 
-import helping_functions.writeInJSONFile
-import listOfHumanBeing
+import server.helping_functions.writeInJSONFile
+import server.listOfHumanBeing
 import java.util.*
-import listOfData
-import java.io.File
-import java.io.FileOutputStream
+import server.listOfData
 
 class SaveCommand() : Command {
 
     /**
-     * Save listOfHumanBeing in file.json (path to it is pathToCollection)
+     * Save server.getListOfHumanBeing in file.json (path to it is pathToCollection)
      *
      * @param map - not used
      *

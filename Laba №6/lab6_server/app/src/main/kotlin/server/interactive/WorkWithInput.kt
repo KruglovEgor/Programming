@@ -1,7 +1,7 @@
-package interactive
+package server.interactive
 
-import commands.*
-import helping_functions.convertJSONtoMapOfStringAndAny
+import server.helping_functions.convertJSONtoMapOfStringAndAny
+import server.commands.*
 
 
 fun getClassesOfCommands() : Map<String, Command>{

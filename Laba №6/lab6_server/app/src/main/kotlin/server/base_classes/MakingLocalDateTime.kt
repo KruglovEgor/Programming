@@ -1,4 +1,4 @@
-package base_classes
+package server.base_classes
 
 import java.time.LocalDateTime
 

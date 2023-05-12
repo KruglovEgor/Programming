@@ -1,8 +1,8 @@
-package commands
+package server.commands
 
-import listOfData
-import listOfHumanBeing
-import exceptions.NoSuchIdException
+import server.listOfData
+import server.listOfHumanBeing
+import server.exceptions.NoSuchIdException
 
 class RemoveByIdCommand(): Command {
 

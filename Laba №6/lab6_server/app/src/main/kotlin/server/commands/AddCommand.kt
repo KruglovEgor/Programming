@@ -1,9 +1,9 @@
-package commands
+package server.commands
 
-import currentId
-import listOfData
-import listOfHumanBeing
-import base_classes.HumanBeing
+import server.currentId
+import server.listOfData
+import server.listOfHumanBeing
+import server.base_classes.HumanBeing
 
 
 class AddCommand() : Command {

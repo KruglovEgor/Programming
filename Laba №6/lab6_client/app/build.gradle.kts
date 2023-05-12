@@ -46,7 +46,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("MainKt")
+    mainClass.set("client.MainKt")
 }
 
 tasks.getByName<JavaExec>("run") {

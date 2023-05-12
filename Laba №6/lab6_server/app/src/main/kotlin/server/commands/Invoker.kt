@@ -1,4 +1,5 @@
-package commands
+package server.commands
+
 
 class Invoker {
 
@@ -8,7 +9,7 @@ class Invoker {
     private var command: Command? = null
 
     /**
-     * Set command to invoker
+     * Set command to server.getInvoker
      *
      * @param command - Instance of class realizing Command interface
      */

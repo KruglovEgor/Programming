@@ -1,4 +1,4 @@
-package base_classes
+package server.base_classes
 
 class Coordinates (private val x: Double = 0.0, private val y: Float = 0.0F){
     override fun toString() : String{

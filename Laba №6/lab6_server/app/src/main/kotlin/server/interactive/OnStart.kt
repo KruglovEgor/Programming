@@ -1,14 +1,14 @@
-package interactive
+package server.interactive
 
-import currentId
-import dateOfInitialization
-import listOfData
-import listOfHumanBeing
-import base_classes.HumanBeing
+import server.currentId
+import server.dateOfInitialization
+import server.listOfData
+import server.listOfHumanBeing
+import server.base_classes.HumanBeing
 import java.time.LocalDateTime
 
 /**
- * Fill listOfHumanBeing with data from listOfData. Also remember the dateOfInitialization
+ * Fill server.getListOfHumanBeing with data from server.getListOfData. Also remember the server.getDateOfInitialization
  */
 fun makeListOfHumanBeing() {
     dateOfInitialization = LocalDateTime.of(

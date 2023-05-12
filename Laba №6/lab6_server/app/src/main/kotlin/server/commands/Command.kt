@@ -1,4 +1,4 @@
-package commands
+package server.commands
 
 interface Command{
     fun execute(map: Map<String, Any?>): Result

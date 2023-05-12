@@ -1,11 +1,10 @@
-package interactive
+package client.interactive
 
-import exceptions.NoSuchCommandException
-import helping_functions.convertJSONtoMapOfStringAndAny
+import client.exceptions.NoSuchCommandException
+import client.helping_functions.convertJSONtoMapOfStringAndAny
 import java.io.File
-import helping_functions.printResults
-import helping_functions.readFromFile
-import inputList
+import client.helping_functions.readFromFile
+import client.inputList
 
 
 /**
@@ -51,8 +50,7 @@ fun getParameters(listOfDescriptionAndType: List<Any>) :MutableMap<String, Any?>
             map[description] = getPathToScript()
         }
         else{
-            //todo Id check. It must exists
-            printResults("Please enter the $type:")
+            println("Please enter the $type:")
             var input = readln()
             while (!checkType(type, input)){
                 input = readln()
@@ -74,7 +72,7 @@ fun getParametersOfHumanBeing() : Map<String, Any?>{
     val map = mutableMapOf<String, Any?>()
     val coordinates = mutableListOf<Any?>()
     for (field in fields.keys){
-        printResults("Please, enter the $field. It must be ${fields[field]}!")
+        println("Please, enter the $field. It must be ${fields[field]}!")
         var input = readln()
         while (! checkType(fields[field].toString(), input)){
             input = readln()
@@ -95,11 +93,11 @@ fun getParametersOfHumanBeing() : Map<String, Any?>{
  * @return String with data from this file
  */
 fun getPathToScript() : String{
-    printResults("Please enter the absolute path to the file.txt with command for execution: ")
+    println("Please enter the absolute path to the file.txt with command for execution: ")
     var usersPath = readln().trim()
     var file = File(usersPath)
     while (!file.exists() or (file.extension != "txt")){
-        printResults("It's a wrong file. Please enter another path:")
+        println("It's a wrong file. Please enter another path:")
         usersPath = readln().trim()
         file = File(usersPath)
     }

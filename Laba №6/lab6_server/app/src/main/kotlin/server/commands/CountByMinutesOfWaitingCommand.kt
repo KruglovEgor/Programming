@@ -1,6 +1,6 @@
-package commands
+package server.commands
 
-import listOfHumanBeing
+import server.listOfHumanBeing
 
 class CountByMinutesOfWaitingCommand() : Command {
 
@@ -9,7 +9,7 @@ class CountByMinutesOfWaitingCommand() : Command {
      *
      * @return Count: Int of units with the same value of field 'minutesOfWaiting'
      */
-    fun getCountByMinutesOfWaiting(minutesOfWaiting : Double) : Int{
+    private fun getCountByMinutesOfWaiting(minutesOfWaiting : Double) : Int{
         return listOfHumanBeing.stream()
             .filter{ it.minutesOfWaiting == minutesOfWaiting}
             .count().toInt()

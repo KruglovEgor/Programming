@@ -1,6 +1,6 @@
-package commands
+package server.commands
 
-import listOfHumanBeing
+import server.listOfHumanBeing
 
 class AddIfMaxCommand() : Command {
 

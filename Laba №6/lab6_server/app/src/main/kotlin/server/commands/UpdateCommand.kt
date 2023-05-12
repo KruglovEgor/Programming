@@ -1,8 +1,8 @@
-package commands
+package server.commands
 
-import listOfHumanBeing
-import base_classes.HumanBeing
-import exceptions.NoSuchIdException
+import server.listOfHumanBeing
+import server.base_classes.HumanBeing
+import server.exceptions.NoSuchIdException
 import java.util.LinkedList
 import java.util.stream.Collectors
 

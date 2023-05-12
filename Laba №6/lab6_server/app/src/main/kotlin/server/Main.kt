@@ -1,20 +1,24 @@
-import base_classes.HumanBeing
-import commands.Invoker
-import commands.SaveCommand
-import helping_functions.convertJSONtoLinkedListOfMutableMapOfStringAndAny
-import helping_functions.convertJSONtoMapOfStringAndAny
-import helping_functions.convertMapToJSON
-import helping_functions.readFromFileOrCreateFile
-import interactive.getClassesOfCommands
-import interactive.getParametersOfCommands
+package server
+
+import server.base_classes.HumanBeing
+import server.commands.Invoker
+import server.commands.SaveCommand
+import server.helping_functions.convertJSONtoLinkedListOfMutableMapOfStringAndAny
+import server.helping_functions.convertJSONtoMapOfStringAndAny
+import server.helping_functions.convertMapToJSON
+import server.helping_functions.readFromFileOrCreateFile
+import server.interactive.getClassesOfCommands
+import server.interactive.getParametersOfCommands
 import java.time.LocalDateTime
 import java.util.*
-import interactive.makeListOfHumanBeing
+import server.interactive.makeListOfHumanBeing
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetSocketAddress
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.system.exitProcess
 
 
@@ -24,8 +28,8 @@ var dateOfInitialization = LocalDateTime.of(LocalDateTime.now().year,
     LocalDateTime.now().hour, LocalDateTime.now().minute, LocalDateTime.now().second)
 var listOfData = LinkedList<MutableMap<String, Any?>>()
 var listOfHumanBeing = LinkedList<HumanBeing>()
-var dataToSend = ""
 var ongoing = true
+val logger: Logger = Logger.getLogger("ServerLogger")
 
 fun main(){
     val data = readFromFileOrCreateFile("Data.json")
@@ -50,7 +54,7 @@ fun main(){
 val invoker = Invoker()
 
 fun startServer() {
-    println("Server started")
+    logger.log(Level.INFO, "Server started")
 
    val serverSocket = DatagramSocket(8080)
 //    val serverSocket = DatagramSocket(28538, InetAddress.getByName("77.234.214.82"))
@@ -75,7 +79,7 @@ fun handleClientRequest(packet: DatagramPacket, serverSocket: DatagramSocket) {
     val clientAddress = packet.socketAddress as InetSocketAddress
     val message = convertJSONtoMapOfStringAndAny(String(packet.data, 0, packet.length))
 
-    println("Received message from client $clientAddress: $message")
+    logger.log(Level.INFO, "Received message from client $clientAddress: $message")
 
     if(message["type"] == "ping"){
         ping(clientAddress, serverSocket)
@@ -83,7 +87,6 @@ fun handleClientRequest(packet: DatagramPacket, serverSocket: DatagramSocket) {
     else if (message["type"] == "exec_command"){
         execCommand(clientAddress, serverSocket, message)
     }
-    //println("Thread #${Thread.currentThread().id} is killed")
 }
 
 fun ping(clientAddress: InetSocketAddress, serverSocket: DatagramSocket){
@@ -99,6 +102,7 @@ fun ping(clientAddress: InetSocketAddress, serverSocket: DatagramSocket){
     val responseData = convertMapToJSON(map).toByteArray()
     val responsePacket = DatagramPacket(responseData, responseData.size, clientAddress.address, clientAddress.port)
     serverSocket.send(responsePacket)
+    logger.log(Level.INFO, "Sent to $clientAddress:  ${convertMapToJSON(map)}")
 }
 
 fun execCommand(clientAddress: InetSocketAddress, serverSocket: DatagramSocket, message: Map<String, Any?>){
@@ -117,7 +121,7 @@ fun execCommand(clientAddress: InetSocketAddress, serverSocket: DatagramSocket, 
     val responseData = convertMapToJSON(map).toByteArray()
     val responsePacket = DatagramPacket(responseData, responseData.size, clientAddress.address, clientAddress.port)
     serverSocket.send(responsePacket)
-    dataToSend = ""
+    logger.log(Level.INFO, "Sent to $clientAddress:  ${convertMapToJSON(map)}")
 }
 
 
@@ -128,17 +132,17 @@ fun startReadingFromConsole(){
             if (input == "save"){
                 val saveCommand = SaveCommand()
                 val result = saveCommand.execute(mapOf("1" to 1))
-                println("Saved: ${result.result}")
+                logger.log(Level.INFO, "Saved: ${result.result}")
             }
             else if(input == "exit"){
                 ongoing = false
                 val saveCommand = SaveCommand()
                 val result = saveCommand.execute(mapOf("1" to 1))
-                println("Saved: ${result.result}")
+                logger.log(Level.INFO, "Exited and saved: ${result.result}")
                 exitProcess(1)
             }
             else{
-                println("You can write 'save' or 'exit' only!")
+                logger.log(Level.WARNING, "You can write 'save' or 'exit' only!")
             }
         }
     }

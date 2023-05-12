@@ -1,4 +1,4 @@
-package commands
+package server.commands
 
 
 class HelpCommand() : Command {

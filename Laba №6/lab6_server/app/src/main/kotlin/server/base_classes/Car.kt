@@ -1,4 +1,4 @@
-package base_classes
+package server.base_classes
 
 class Car(val name: String? = null) {
     override fun toString(): String

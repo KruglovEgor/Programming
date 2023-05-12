@@ -1,7 +1,7 @@
-package commands
+package server.commands
 
-import base_classes.HumanBeing
-import listOfHumanBeing
+import server.base_classes.HumanBeing
+import server.listOfHumanBeing
 
 
 class RemoveFirstCommand(): Command {

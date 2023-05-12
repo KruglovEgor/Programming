@@ -1,6 +1,6 @@
-package base_classes
+package server.base_classes
 
-import currentId
+import server.currentId
 import java.time.LocalDateTime
 
 /**

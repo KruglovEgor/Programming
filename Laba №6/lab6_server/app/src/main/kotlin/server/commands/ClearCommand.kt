@@ -1,13 +1,13 @@
-package commands
+package server.commands
 
-import listOfData
-import listOfHumanBeing
+import server.listOfData
+import server.listOfHumanBeing
 
 
 class ClearCommand(): Command {
 
     /**
-     * Make listOfData and listOfHumanBeing empty
+     * Make server.getListOfData and server.getListOfHumanBeing empty
      *
      * @param map - not used
      *

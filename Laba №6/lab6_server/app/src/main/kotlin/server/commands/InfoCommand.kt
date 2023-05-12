@@ -1,7 +1,7 @@
-package commands
+package server.commands
 
-import dateOfInitialization
-import listOfHumanBeing
+import server.dateOfInitialization
+import server.listOfHumanBeing
 
 class InfoCommand() : Command {
 
@@ -14,7 +14,7 @@ class InfoCommand() : Command {
         val txt = """
             Class of collection: LinkedList
             Count of units: ${listOfHumanBeing.size}
-            Date of initialization: ${dateOfInitialization}
+            Date of initialization: $dateOfInitialization
             """.trimIndent()
         return txt
     }

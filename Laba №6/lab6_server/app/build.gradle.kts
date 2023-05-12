@@ -1,4 +1,3 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.include
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 
@@ -44,7 +43,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("MainKt")
+    mainClass.set("server.MainKt")
 }
 
 tasks.getByName<JavaExec>("run") {

@@ -1,12 +1,15 @@
-import helping_functions.convertJSONtoMapOfStringAndAny
-import helping_functions.convertMapToJSON
-import helping_functions.printResults
-import helping_functions.writeInJSONFile
-import interactive.commandHandler
-import interactive.getParametersOfCommands
+package client
+
+import client.helping_functions.convertJSONtoMapOfStringAndAny
+import client.helping_functions.convertMapToJSON
+import client.helping_functions.writeInJSONFile
+import client.interactive.commandHandler
+import client.interactive.getParametersOfCommands
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
+import java.nio.channels.SelectionKey
+import java.nio.channels.Selector
 import java.util.*
 
 
@@ -31,7 +34,7 @@ fun listenToUser(input: String) :  MutableMap<String, Any?> {
         map["isNull"] = false
         return map
     } catch (e: Exception){
-        e.message?.let { printResults(it) }
+        e.message?.let { println(it) }
         return mutableMapOf("isNull" to true)
     }
 }
@@ -39,15 +42,16 @@ fun listenToUser(input: String) :  MutableMap<String, Any?> {
 fun getConnection(){
     val channel = DatagramChannel.open()
     channel.configureBlocking(false)
-
+    val selector = Selector.open()
+    channel.register(selector, SelectionKey.OP_READ)
 
     val serverAddress = InetSocketAddress("localhost", 8080)
 //    val serverAddress = InetSocketAddress("77.234.214.82", 28538)
 
-    val buffer = ByteBuffer.allocate(99999)
+    val buffer = ByteBuffer.allocate(100*1024)
 
     while (true) {
-        ping(serverAddress, buffer, channel)
+        ping(serverAddress, buffer, channel, selector)
         var mapToSend: MutableMap<String, Any?>
         if (inputList.isEmpty()){
             println("Enter a command to send to the server: ")
@@ -65,7 +69,7 @@ fun getConnection(){
                 break
             }
             mapToSend.remove("isNull")
-            val receivedMap = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, mapToSend)
+            val receivedMap = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, mapToSend, selector)
             if (success){
                 println(receivedMap["result"])
             }
@@ -93,12 +97,23 @@ fun receiveData(buffer: ByteBuffer, channel: DatagramChannel) : ByteArray{
     return receivedData
 }
 
-fun sendAndReceiveDataWithCheckingAvailabilityOfServer(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, dataToSend: Map<String, Any?>) : ByteArray{
+fun sendAndReceiveDataWithCheckingAvailabilityOfServer(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, dataToSend: Map<String, Any?>, selector: Selector) : ByteArray{
     var receivedData = ByteArray(0)
     while (true){
         sendData(serverAddress, buffer, channel, dataToSend)
-        Thread.sleep(delay)
-        receivedData = receiveData(buffer, channel)
+
+        if(selector.select(delay) > 0){
+            val selectedKeys = selector.selectedKeys()
+            val iterator = selectedKeys.iterator()
+            while(iterator.hasNext()) {
+                val key = iterator.next()
+                if(key.isReadable) {
+                    receivedData = receiveData(buffer, channel)
+                }
+                iterator.remove()
+            }
+        }
+
         if (receivedData.isNotEmpty()) {
             break
         }
@@ -108,8 +123,8 @@ fun sendAndReceiveDataWithCheckingAvailabilityOfServer(serverAddress: InetSocket
     return receivedData
 }
 
-fun sendAndReceiveDataWithCheckingValidity(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, dataToSend: Map<String, Any?>) : Map<String, Any?>{
-    val receivedData = sendAndReceiveDataWithCheckingAvailabilityOfServer(serverAddress, buffer, channel,dataToSend)
+fun sendAndReceiveDataWithCheckingValidity(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, dataToSend: Map<String, Any?>, selector: Selector) : Map<String, Any?>{
+    val receivedData = sendAndReceiveDataWithCheckingAvailabilityOfServer(serverAddress, buffer, channel,dataToSend, selector)
     val receivedMessage = String(receivedData)
     var map = convertJSONtoMapOfStringAndAny(receivedMessage)
     if(!(map["success"] as Boolean)){
@@ -119,12 +134,12 @@ fun sendAndReceiveDataWithCheckingValidity(serverAddress: InetSocketAddress, buf
     return map
 }
 
-fun ping(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel){
-    val map = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, mapOf("type" to "ping"))
+fun ping(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, selector: Selector){
+    val map = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, mapOf("type" to "ping"), selector)
     if(success){
         if (map["result"] as Map<String, List<Any>> != getParametersOfCommands()){
-            println("There is a new command on the server. You may reconnect to see it!")
-            //writeInJSONFile()
+            println("There is a change in commands on the server! Print 'help' to get more information.")
+            map["result"]?.let { writeInJSONFile("CommandsParameters.json", it) }
         }
     }
 }

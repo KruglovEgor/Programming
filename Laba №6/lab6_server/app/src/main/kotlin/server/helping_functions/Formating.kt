@@ -1,4 +1,4 @@
-package helping_functions
+package server.helping_functions
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -37,11 +37,8 @@ fun writeInJSONFile(pathToFile: String, data: List<*>) {
         bos.flush()
         bos.close()
     }
-    catch (e: IOException){
-        throw IOException(e)
-    }
-    catch (e: RuntimeException){
-        throw RuntimeException(e)
+    catch (e: Exception){
+        println("Error ${e.message}")
     }
 }
 

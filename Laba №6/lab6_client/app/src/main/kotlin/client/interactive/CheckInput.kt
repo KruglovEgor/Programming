@@ -1,8 +1,8 @@
-package interactive
+package client.interactive
 
-import base_classes.Mood
-import helping_functions.*
-import java.io.File
+import client.base_classes.Mood
+import client.helping_functions.convertJSONtoMapOfStringAndListOfAny
+import client.helping_functions.readFromFileOrCreateFile
 
 
 /**
@@ -34,10 +34,20 @@ fun getDescriptionOfHumanBeingFields(): Map<String, String>{
  * @return LinkedTreeMap<String, List<Any>> of pairs 'command' : '['count_of_params', 'type_of_1st_param', 'type_of_2nd_param', ...]'
  */
 fun getParametersOfCommands() : Map<String, List<Any>> {
-    //val txt = readFromFile("src\\main\\resources\\CommandsParameters.json")
-    val inputStream = object {}.javaClass.getResourceAsStream("/CommandsParameters.json")
-    val dataFromFile = inputStream.bufferedReader().use { it.readText() }
-    return convertJSONtoMapOfStringAndListOfAny(dataFromFile)
+    val txt = readFromFileOrCreateFile("CommandsParameters.json")
+//    val inputStream = object {}.javaClass.getResourceAsStream("/CommandsParameters.json")
+//    val dataFromFile = inputStream.bufferedReader().use { it.readText() }
+    if (txt.isEmpty()){
+        return  mapOf<String, List<Any>>()
+    }
+    else{
+        try {
+            return convertJSONtoMapOfStringAndListOfAny(txt)
+        } catch (e: Exception){
+            println("Error ${e.message}")
+            return mapOf<String, List<Any>>()
+        }
+    }
 }
 
 
@@ -77,7 +87,7 @@ fun checkType(type: String, input: String) : Boolean{
     val forStringNull = Regex("^([a-zA-Z]+[a-zA-Z \\-0-9]*)?$")
     val forBoolean = Regex("^(true|false)$")
 
-    val typeAndMask = hashMapOf<String, Regex>(
+    val typeAndMask = hashMapOf(
         "Int" to forInt,
         "Double" to forDouble,
         "Mood" to forMood,
@@ -108,7 +118,7 @@ fun checkType(type: String, input: String) : Boolean{
     else{
         println("Oh, there is something wrong in your input! You must enter the '$type'")
         println(descriptionOfType[type.substringBefore('?')]!!)
-        if (type.endsWith('?')) printResults("*It also may be null! So you may just press the 'enter'*")
+        if (type.endsWith('?')) println("*It also may be null! So you may just press the 'enter'*")
         return false
     }
 }
@@ -215,15 +225,15 @@ fun getMaxValues() : HashMap<String, Number>{
 fun convertToNeededType(input: String?, type: String?): Any?{
     var convertedInput = input
     if (input != null) {
-        if (input.length == 0) convertedInput = null
+        if (input.isEmpty()) convertedInput = null
     }
 
     val output = when(type){
         "String" -> convertedInput
         "Double" -> convertedInput?.toDouble()
-        "Int" -> convertedInput?.toInt()
+        "Int" -> convertedInput?.toDouble()?.toInt()
         "Mood" -> Mood.valueOf(convertedInput as String)
-        "Long" -> convertedInput?.toLong()
+        "Long" -> convertedInput?.toDouble()?.toLong()
         "Float" -> convertedInput?.toFloat()
         "Boolean" -> convertedInput.toBoolean()
         "Double?" -> convertedInput?.toDouble()

@@ -1,9 +1,8 @@
-package helping_functions
+package client.helping_functions
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.io.*
-import java.net.FileNameMap
 import java.util.*
 
 
@@ -41,8 +40,8 @@ fun convertJSONtoMapOfStringAndListOfAny(txt: String) :Map<String, List<Any>> {
  *
  * @param data - LinkedList<*> for writing in file
  */
-fun writeInJSONFile(pathToFile: String, data: LinkedList<*>) {
-    val gson = GsonBuilder().serializeNulls().setPrettyPrinting().create()
+fun writeInJSONFile(pathToFile: String, data: Any) {
+    val gson = GsonBuilder().serializeNulls().create()
     val jsonString = gson.toJson(data)
     try  {
         val bos = BufferedOutputStream(FileOutputStream(pathToFile))
@@ -50,11 +49,8 @@ fun writeInJSONFile(pathToFile: String, data: LinkedList<*>) {
         bos.flush()
         bos.close()
     }
-    catch (e: IOException){
-        throw IOException(e)
-    }
-    catch (e: RuntimeException){
-        throw RuntimeException(e)
+    catch (e: Exception){
+        println("Error ${e.message}")
     }
 }
 
@@ -62,3 +58,21 @@ fun convertJSONtoMapOfStringAndAny(txt: String) :Map<String, Any?> {
     return Gson().fromJson(txt, Map::class.java) as Map<String, Any?>
 }
 
+/**
+ * Read data from file to String. Keep asking if we can't find such file.
+ *
+ * @param fileName - name of the file
+ *
+ * @return String with all data from file
+ */
+fun readFromFileOrCreateFile(fileName : String) : String{
+    val file = File(fileName)
+    if (file.exists()){
+        return file.readText()
+    }
+    else{
+        file.createNewFile()
+        return ""
+    }
+
+}

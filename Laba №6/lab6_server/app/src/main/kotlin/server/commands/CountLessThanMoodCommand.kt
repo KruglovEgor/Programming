@@ -1,7 +1,7 @@
-package commands
+package server.commands
 
-import listOfHumanBeing
-import base_classes.Mood
+import server.listOfHumanBeing
+import server.base_classes.Mood
 
 class CountLessThanMoodCommand(): Command {
 

@@ -1,8 +1,8 @@
-package commands
+package server.commands
 
-import base_classes.HumanBeing
-import exceptions.NoSuchIdException
-import listOfHumanBeing
+import server.base_classes.HumanBeing
+import server.exceptions.NoSuchIdException
+import server.listOfHumanBeing
 
 class RemoveHeadCommand(): Command {
 

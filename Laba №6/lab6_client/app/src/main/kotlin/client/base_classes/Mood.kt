@@ -1,4 +1,4 @@
-package base_classes
+package client.base_classes
 
 enum class Mood {
     SADNESS,
