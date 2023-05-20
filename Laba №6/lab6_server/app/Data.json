@@ -25,31 +25,6 @@
     }
   },
   {
-    "id": 2,
-    "name": "GhF",
-    "coordinates": [
-      324.3,
-      2423.43
-    ],
-    "creationDate": [
-      2023,
-      4,
-      5,
-      20,
-      55,
-      10
-    ],
-    "realHero": true,
-    "hasToothpick": true,
-    "impactSpeed": 24535352,
-    "soundtrackName": "fjfj",
-    "minutesOfWaiting": null,
-    "mood": null,
-    "car": {
-      "name": null
-    }
-  },
-  {
     "id": 3,
     "name": "TTT",
     "coordinates": [
@@ -126,24 +101,24 @@
   },
   {
     "id": 6,
-    "name": "ttt",
+    "name": "dffdf",
     "coordinates": [
-      3244.3,
-      324.3
+      45455.3,
+      775.43
     ],
     "creationDate": [
       2023,
       5,
-      12,
-      19,
-      57,
-      14
+      20,
+      16,
+      49,
+      15
     ],
     "realHero": true,
     "hasToothpick": true,
-    "impactSpeed": 3243,
-    "soundtrackName": "rte",
-    "minutesOfWaiting": 3342.32,
+    "impactSpeed": 0,
+    "soundtrackName": "DefaultSoundtrackName",
+    "minutesOfWaiting": null,
     "mood": null,
     "car": {
       "name": null

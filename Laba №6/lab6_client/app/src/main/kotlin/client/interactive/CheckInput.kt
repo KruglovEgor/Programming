@@ -76,7 +76,7 @@ fun checkIfCommandExists(commandFromUser: String) :Boolean{
  *
  * @return 'true' if input is in format of type and 'false' if not
  */
-fun checkType(type: String, input: String) : Boolean{
+fun checkType(type: String, input: String, printErrors: Boolean) : Boolean{
     val forInt = Regex("^-?\\d+\\.?0*$")
     val forDouble = Regex("^-?\\d+\\.\\d*$")
     val forDoubleNull = Regex("^(-?\\d+\\.\\d*$)?")
@@ -111,14 +111,16 @@ fun checkType(type: String, input: String) : Boolean{
         else{
             val minValue = minValues[type]
             val maxValue = maxValues[type]
-            println("Oh, there is something wrong in your input, it's too big or too small!\nMin value: $minValue\nMax value: $maxValue")
+            if (printErrors) println("Oh, there is something wrong in your input, it's too big or too small!\nMin value: $minValue\nMax value: $maxValue")
             return false
         }
     }
     else{
-        println("Oh, there is something wrong in your input! You must enter the '$type'")
-        println(descriptionOfType[type.substringBefore('?')]!!)
-        if (type.endsWith('?')) println("*It also may be null! So you may just press the 'enter'*")
+        if (printErrors){
+            println("Oh, there is something wrong in your input! You must enter the '$type'")
+            println(descriptionOfType[type.substringBefore('?')]!!)
+            if (type.endsWith('?')) println("*It also may be null! So you may just press the 'enter'*")
+        }
         return false
     }
 }

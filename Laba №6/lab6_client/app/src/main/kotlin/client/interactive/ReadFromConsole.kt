@@ -52,7 +52,7 @@ fun getParameters(listOfDescriptionAndType: List<Any>) :MutableMap<String, Any?>
         else{
             println("Please enter the $type:")
             var input = readln()
-            while (!checkType(type, input)){
+            while (!checkType(type, input, true)){
                 input = readln()
             }
             map[description] = convertToNeededType(input, type)
@@ -74,7 +74,7 @@ fun getParametersOfHumanBeing() : Map<String, Any?>{
     for (field in fields.keys){
         println("Please, enter the $field. It must be ${fields[field]}!")
         var input = readln()
-        while (! checkType(fields[field].toString(), input)){
+        while (! checkType(fields[field].toString(), input, true)){
             input = readln()
         }
         if(field.startsWith("coordinate")){
@@ -126,7 +126,7 @@ fun getPathToScript() : String{
                         if (neededParams[j].toString() != "unit Map"){
                             val nameInMap = (neededParams[j] as String).split(" ")[0]
                             val neededType = (neededParams[j] as String).split(" ")[1]
-                            if (!checkType(neededType, params[nameInMap].toString())) validity = false
+                            if (!checkType(neededType, params[nameInMap].toString(), false)) validity = false
                         }
                     }
                 }
@@ -136,7 +136,7 @@ fun getPathToScript() : String{
                 inputList.add(mapOf("command" to commandName, "params" to params))
             }
         }
-        if (metExecuteScript) println("In file was command execute_script. It may cause the infinity loop, so please enter it by yourself if tou want to execute it.")
+        if (metExecuteScript) println("In file was command execute_script. It may cause the infinity loop, so please enter it by yourself if you want to execute it.")
     }
     return ""
 }
