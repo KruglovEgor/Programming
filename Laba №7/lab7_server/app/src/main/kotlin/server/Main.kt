@@ -27,8 +27,6 @@ const val url = "jdbc:postgresql://localhost:5432/Lab7"
 const val username = "****"
 const val password = "****"
 
-//todo add multi-threading
-
 fun main(){
     val connection = DriverManager.getConnection(url, username, password)
     logger.log(Level.INFO, "Connected to DB")
