@@ -8,37 +8,65 @@ import server.startReadingFromConsole
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetSocketAddress
+import java.nio.ByteBuffer
+import java.nio.channels.DatagramChannel
+import java.nio.channels.SelectionKey
+import java.nio.channels.Selector
 import java.sql.Connection
-import java.util.LinkedList
 import java.util.Queue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
 
 fun startServer(connection: Connection) {
     logger.log(Level.INFO, "Server started")
 
-    val serverSocket = DatagramSocket(8080)
-    val buffer = ByteArray(1024)
-    val fixedExecutor: ExecutorService = Executors.newFixedThreadPool(8)
+
+    val datagramChannel = DatagramChannel.open()
+    datagramChannel.configureBlocking(false)
+    val serverSocket = datagramChannel.socket()
+    serverSocket.bind(InetSocketAddress(8080))
+    val selector: Selector = Selector.open()
+    datagramChannel.register(selector, SelectionKey.OP_READ)
+
+
+    val fixedExecutor: ExecutorService = Executors.newFixedThreadPool(4)
     val cashedExecutor : ExecutorService = Executors.newCachedThreadPool()
     startReadingFromConsole(connection)
-    val packets : Queue<DatagramPacket> = LinkedList()
-    val mapsToSend :Queue<Pair<InetSocketAddress, MutableMap<String, Any?>>> = LinkedList()
-    while (ongoing) {
-        Thread{
-            val packet = DatagramPacket(buffer, buffer.size)
-            serverSocket.receive(packet)
-            packets.add(packet)
-            println(1)
-        }.start()
+    val packets : Queue<DatagramPacket> = LinkedBlockingQueue()
+    val mapsToSend :Queue<Pair<InetSocketAddress, MutableMap<String, Any?>>> = LinkedBlockingQueue()
 
-        // Создаем новый поток для обработки запроса от клиента
+    while (ongoing) {
+        selector.select(10)
+
+        val selectedKeys = selector.selectedKeys()
+        val iterator = selectedKeys.iterator()
+
+        while (iterator.hasNext()){
+            val key = iterator.next()
+            iterator.remove()
+                if (key.isReadable){
+
+                        val buffer = ByteBuffer.allocate(1024)
+                        val senderAddress = datagramChannel.receive(buffer)
+                        if (senderAddress != null){
+                            Thread{
+                                buffer.flip()
+                                val packetData = ByteArray(buffer.limit())
+                                buffer.get(packetData)
+                                val packet = DatagramPacket(packetData, packetData.size, senderAddress)
+                                packets.add(packet)
+                            }.start()
+                        }
+
+            }
+        }
         if (packets.isNotEmpty()){
             println(2)
             fixedExecutor.execute{
                 val pair = handleClientRequest(packets.poll(), serverSocket, connection)
-                mapsToSend.add(pair)
+                    mapsToSend.add(pair)
             }
         }
 
@@ -46,7 +74,7 @@ fun startServer(connection: Connection) {
             println(3)
             cashedExecutor.execute{
                 val pair = mapsToSend.poll()
-                sendDataToClient(serverSocket, pair.first, pair.second)
+                sendDataToClient(datagramChannel, pair.first, pair.second)
             }
         }
     }
@@ -74,9 +102,9 @@ fun handleClientRequest(packet: DatagramPacket, serverSocket: DatagramSocket, co
 }
 
 
-fun sendDataToClient(serverSocket: DatagramSocket, clientAddress: InetSocketAddress, mapToSend:MutableMap<String, Any?>){
+fun sendDataToClient(datagramChannel: DatagramChannel, clientAddress: InetSocketAddress, mapToSend:MutableMap<String, Any?>){
     val responseData = convertMapToJSON(mapToSend).toByteArray()
-    val responsePacket = DatagramPacket(responseData, responseData.size, clientAddress.address, clientAddress.port)
-    serverSocket.send(responsePacket)
+    val wrappedData = ByteBuffer.wrap(responseData)
+    datagramChannel.send(wrappedData, clientAddress)
     logger.log(Level.INFO, "Sent to $clientAddress:  ${convertMapToJSON(mapToSend)}")
 }

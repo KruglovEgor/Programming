@@ -24,10 +24,9 @@ val invoker = Invoker()
 
 //todo add reading stuff for connecting to db from file (like json or yaml)
 const val url = "jdbc:postgresql://localhost:5432/Lab7"
-const val username = "****"
-const val password = "****"
+const val username = "postgres"
+const val password = "postgres16"
 
-//todo add multi-threading
 
 fun main(){
     val connection = DriverManager.getConnection(url, username, password)

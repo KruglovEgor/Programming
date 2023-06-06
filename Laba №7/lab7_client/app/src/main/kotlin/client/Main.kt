@@ -15,7 +15,7 @@ import java.util.*
 
 
 const val timeToReconnect = 5000.toLong()
-const val delay = 1000.toLong()
+const val delay = 3000.toLong()
 var success = true
 var ongoing = true
 var inputList = LinkedList<Map<String, Any?>>()
@@ -48,7 +48,7 @@ fun getConnection(){
     val channel = DatagramChannel.open()
     channel.configureBlocking(false)
     val selector = Selector.open()
-    channel.register(selector, SelectionKey.OP_READ)
+    channel.register(selector, SelectionKey.OP_WRITE)
 
     val serverAddress = InetSocketAddress("localhost", 8080)
 //    val serverAddress = InetSocketAddress("77.234.214.82", 28538)
@@ -56,17 +56,19 @@ fun getConnection(){
     val buffer = ByteBuffer.allocate(100*1024)
     try {
         signUp(serverAddress, buffer, channel, selector)
+        while (ongoing) communicationProcess(serverAddress, buffer, channel, selector)
     } catch (e: Exception){
         println("Ops, there is problem with connection. Try one more time or return later!")
+        println(e.message)
     }
 
-    while (ongoing) {
-        try {
-            communicationProcess(serverAddress, buffer, channel, selector)
-        } catch (e: Exception){
-            println("Ops, there is problem with connection. Try one more time or return later!")
-        }
-    }
+//    while (ongoing) {
+//        try {
+//            communicationProcess(serverAddress, buffer, channel, selector)
+//        } catch (e: Exception){
+//            println("Ops, there is problem with connection. Try one more time or return later!")
+//        }
+//    }
 }
 
 
@@ -120,26 +122,24 @@ fun receiveData(buffer: ByteBuffer, channel: DatagramChannel) : ByteArray{
 
 fun sendAndReceiveDataWithCheckingAvailabilityOfServer(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, dataToSend: Map<String, Any?>, selector: Selector) : ByteArray{
     var receivedData = ByteArray(0)
-    while (true){
+    while (receivedData.isEmpty()){
         sendData(serverAddress, buffer, channel, dataToSend)
-
-        if(selector.select(delay) > 0){
-            val selectedKeys = selector.selectedKeys()
-            val iterator = selectedKeys.iterator()
-            while(iterator.hasNext()) {
-                val key = iterator.next()
-                if(key.isReadable) {
-                    receivedData = receiveData(buffer, channel)
-                }
-                iterator.remove()
+        channel.register(selector, SelectionKey.OP_READ)
+        selector.select(delay)
+        val selectedKeys = selector.selectedKeys()
+        val iterator = selectedKeys.iterator()
+        while (iterator.hasNext()){
+            val key = iterator.next()
+            iterator.remove()
+            if (key.isReadable) {
+                receivedData = receiveData(buffer, channel)
+                channel.register(selector, SelectionKey.OP_WRITE)
             }
         }
-
-        if (receivedData.isNotEmpty()) {
-            break
-        }
-        println("Server is unavailable. Time to reconnect - $timeToReconnect milliseconds")
-        Thread.sleep(timeToReconnect)
+        if (receivedData.isEmpty()){
+                println("Server is unavailable! Reconnecting...")
+                Thread.sleep(timeToReconnect)
+            }
     }
     return receivedData
 }
@@ -176,8 +176,19 @@ fun signUp(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: Datagr
 
     println("Please, enter your username:")
     login = readln().trim()
+    while (login.isEmpty()){
+        println("Login can't be empty!")
+        println("Please, enter your username:")
+        login = readln().trim()
+    }
     println("Please, enter your password")
-    HashedPassword = DigestUtils.sha512Hex(readln().trim())
+    var password = readln().trim()
+    while (password.isEmpty()){
+        println("Password can't be empty!")
+        println("Please, enter your password:")
+        password = readln().trim()
+    }
+    HashedPassword = DigestUtils.sha512Hex(password)
     val dataToSend = mapOf(
         "type" to answer,
         "login" to login,
