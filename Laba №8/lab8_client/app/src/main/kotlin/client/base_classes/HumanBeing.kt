@@ -41,6 +41,23 @@ class HumanBeing(map: Map<String, Any?>) : Comparable<HumanBeing>  {
         TODO("Not yet implemented")
     }
 
+    fun makeMap() : Map<String, Any?>{
+        return mapOf(
+            "id" to id.value,
+            "name" to name.value,
+            "coordinate_x" to coordinate_x.value,
+            "coordinate_y" to coordinate_y.value,
+            "creationDate" to creationDate.value,
+            "realHero" to realHero.value,
+            "hasToothPick" to hasToothPick.value,
+            "impactSpeed" to impactSpeed.value,
+            "soundtrackName" to soundtrackName.value,
+            "minutesOfWaiting" to minutesOfWaiting.value,
+            "mood" to mood.value,
+            "car" to car.value,
+            "creator" to creator.value
+        )
+    }
 
 }
 

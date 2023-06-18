@@ -1,168 +1,179 @@
 package client.GUI.Map
 
 
+import client.GUI.Localization.Localization
 import client.buffer
 import client.channel
 import client.connection.sendAndReceiveDataWithCheckingValidity
 import client.helping_functions.convertJSONtoListOfMapAndString
+import client.interactive.*
 import client.selector
 import client.serverAddress
-import javafx.animation.*
-import javafx.application.Platform
-import javafx.beans.property.SimpleDoubleProperty
+import javafx.event.ActionEvent
+import javafx.geometry.Pos
 import javafx.scene.Group
-import javafx.scene.Node
-import javafx.scene.control.Alert
+import javafx.scene.Scene
+import javafx.scene.control.Button
 import javafx.scene.control.ButtonType
-import javafx.scene.control.Label
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.Tooltip
+import javafx.scene.control.Dialog
+import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-
+import javafx.scene.shape.Rectangle
+import javafx.scene.text.Text
+import javafx.stage.Stage
 import javafx.util.Duration
+import org.controlsfx.control.Notifications
 import server.base_classes.HumanBeing
 import tornadofx.*
-import javafx.scene.shape.Rectangle
 import java.security.MessageDigest
+import java.util.concurrent.CompletableFuture
 
 
-class MapView(val login: String = "11") : View() {
+class MapView(var currentLanguage: String = "ru", val login: String = "11") : View() {
     private var humans = mutableListOf<HumanBeing>()
-    private val updateInterval:Long = 3
-
-    override val root = scrollpane {
-        val canvasWidth = 1000.0
-        val canvasHeight = 1000.0
-        val image = Image("C:\\Users\\tentu\\OneDrive\\Рабочий стол\\ITMO\\2 семестр\\Прога\\lab8\\lab8_client\\app\\src\\main\\kotlin\\client\\human_small.png")
-        val canvas = canvas(canvasWidth, canvasHeight)
-        val sizeOfHuman = 32.0
-
-        // Обнови оси и засечки при изменении размеров окна
-        fun updateAxes() {
-            val scaleX = canvas.width / canvasWidth
-            val scaleY = canvas.height / canvasHeight
-
-            val gc = canvas.graphicsContext2D
-
-            // Очисти Canvas
-            gc.clearRect(0.0, 0.0, canvas.width, canvas.height)
-
-            // Нарисуй оси
-            gc.stroke = Color.BLACK
-            gc.lineWidth = 2.0
-            gc.strokeLine(0.0, canvas.height / 2, canvas.width, canvas.height / 2) // Ось x
-            gc.strokeLine(canvas.width / 2, 0.0, canvas.width / 2, canvas.height) // Ось y
-
-            // Нарисуй засечки и их значения
-            gc.stroke = Color.GRAY
-            gc.lineWidth = 1.0
-            val stepSize = 25
-            val numStepsX = (canvasWidth / scaleX).toInt() / stepSize
-            val numStepsY = (canvasHeight / scaleY).toInt() / stepSize
-
-            for (i in 1 until numStepsX) {
-                val x = i * stepSize * scaleX
-                gc.strokeLine(x, (canvas.height / 2) - 5, x, (canvas.height / 2) + 5)
-                gc.fillText((x - (canvas.width / 2)).toInt().toString(), x, (canvas.height / 2) + 20)
-            }
-
-            for (i in 1 until numStepsY) {
-                val y = i * stepSize * scaleY
-                gc.strokeLine((canvas.width / 2) - 5, y, (canvas.width / 2) + 5, y)
-                gc.fillText((y - (canvas.height / 2)).toInt().toString(), (canvas.width / 2) + 10, y)
-            }
-        }
-
-        fun drawImageOnCanvas(image: Image, unit: HumanBeing, width_: Double, height_:Double, login: String) {
-            val gc = canvas.graphicsContext2D
-
-//            val imageView = imageview(image)
-//            imageView.setOnMouseClicked {
-//                println(1)
-//            }
-
-            // Определение координат относительно центра Canvas
-            val centerX = canvas.width / 2
-            val centerY = canvas.height / 2
-            val scaleX = canvas.width / canvasWidth
-            val scaleY = canvas.height / canvasHeight
-
-            val x_ = centerX + unit.coordinate_x.value * scaleX - width_ / 2
-            val y_ = centerY - unit.coordinate_y.value.toDouble() * scaleY - height_ / 2
-
-            // Отрисовка изображения
-            gc.apply {
-                fill = Color.TRANSPARENT // Установка прозрачного цвета фона
-                fill = getColorFromHash(getHash(unit.creator.value))
-                fillRect(x_, y_, width_, height_) // Заполнение фона прямоугольником
-                drawImage(image, x_, y_, width_, height_)
-            }
-//            imageView.xProperty().bind(x_.toProperty())
-//            imageView.yProperty().bind(y_.toProperty())
-//            imageView.tooltip {
-//                text=unit.name.value
-//            }
-            //canvas.add(imageView)
-        }
-
-
-        fun playAnimation(added: List<HumanBeing>, removed: List<HumanBeing>) {
-            val currentSize = SimpleDoubleProperty(0.0)
-            val timeline = Timeline(
-                KeyFrame(Duration.ZERO, KeyValue(currentSize, 1)),
-                KeyFrame(1.seconds, KeyValue(currentSize, sizeOfHuman))
-            )
-            //updateAxes()
-
-            timeline.currentTimeProperty().addListener { _, _, _ ->
-                updateAxes()
-                added.forEach { human -> drawImageOnCanvas(image, human, currentSize.value, currentSize.value, human.creator.value) }
-                removed.forEach { human -> drawImageOnCanvas(image, human, sizeOfHuman - currentSize.value, sizeOfHuman - currentSize.value, human.creator.value) }
-            }
-            timeline.play()
-            add(canvas)
-        }
-
-
-        // Установи ползунки прокрутки
-        hbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
-        vbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
-
-        // Обнови оси при изменении размеров окна
-        canvas.widthProperty().addListener { _, _, _ -> updateAxes() }
-        canvas.heightProperty().addListener { _, _, _ -> updateAxes() }
-
-        val timeline = Timeline()
-        val keyFrame = KeyFrame(
-            Duration.seconds(updateInterval.toDouble()),
-            {
-                val updatedHumans = getCollectionOfHumans()
-                val added = updatedHumans.filter { newHuman ->
-                    humans.none { it.id.value == newHuman.id.value }
-                }
-                val removed = humans.filter { oldHuman ->
-                    updatedHumans.none { it.id.value == oldHuman.id.value }
-                }
-
-                if (added.isNotEmpty() || removed.isNotEmpty()){
-                    playAnimation(added, removed)
-                }
-                humans = updatedHumans
-            }
-        )
-        timeline.cycleCount = Timeline.INDEFINITE
-        timeline.keyFrames.add(keyFrame)
-        timeline.play()
-
-        // Обнови оси после открытия окна
-        Platform.runLater {
-            updateAxes()
-        }
-        content = canvas
+    private val humanImage = Image("C:\\Users\\tentu\\OneDrive\\Рабочий стол\\ITMO\\2 семестр\\Прога\\lab8\\lab8_client\\app\\src\\main\\kotlin\\client\\color_human_small.png")
+    private val mapImage = Image("C:\\Users\\tentu\\OneDrive\\Рабочий стол\\ITMO\\2 семестр\\Прога\\lab8\\lab8_client\\app\\src\\main\\kotlin\\client\\map.png")
+    override val root = stackpane {
+        prefWidth = 1598.0
+        prefHeight = 863.0
+        title = "Map view"
 
     }
+    init {
+        setMap()
+    }
+
+
+
+    private fun setMap(){
+        root.clear()
+        val group = Group()
+        val map = imageview(mapImage)
+        group.children.add(map)
+        humans=getCollectionOfHumans()
+        for (human in humans){
+            val imageview = imageview(humanImage)
+            imageview.setOnMouseClicked {
+                val map = mutableMapOf<String, Any?>()
+                map["type"] = "exec_command"
+                map["command"] = "update"
+                map["params"] = mutableMapOf<String, Any?>()
+                val parametersFromClient = dialogAboutParameters(human, login)
+                if (!(parametersFromClient.isNullOrEmpty())) {
+                    parametersFromClient.forEach { (key, value) -> (map["params"] as MutableMap<String, Any?>)[key] = value }
+                    (map["params"]as MutableMap<String, Any?>)["creator"] = login
+                    (map["params"]as MutableMap<String, Any?>)["id"] = human.id.value
+                    val response = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, map, selector)
+                    Notifications.create()
+                        .title("Уведомление")
+                        .text(response["result"].toString())
+                        .owner(currentWindow)
+                        .hideAfter(Duration.seconds(5.0))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .darkStyle()
+                        .graphic(null)
+                        .show()
+                }
+
+            }
+            imageview.xProperty().bind(human.coordinate_x)
+            imageview.yProperty().bind(human.coordinate_y)
+            imageview.tooltip { "${human.id.value}\n${human.name.value}\n(${human.coordinate_x.value},${human.coordinate_y.value})\n${human.creator.value}" }
+            val bgRectangle = Rectangle().apply{
+                width = imageview.boundsInParent.width
+                height = imageview.boundsInParent.height
+                x=imageview.x
+                y=imageview.y
+                fill = Color.TRANSPARENT
+                fill=getColorFromHash(getHash(human.creator.value))
+            }
+            group.children.add(bgRectangle)
+            group.children.add(imageview)
+        }
+        root.add(group)
+    }
+
+    private fun dialogAboutParameters(unit: HumanBeing, login: String) : MutableMap<String, Any?>?{
+        val futureResult = CompletableFuture<MutableMap<String, Any?>?>()
+        if (unit.creator.value == login){
+            val dialog = Dialog<List<String>>()
+            dialog.title = Localization.translations[currentLanguage]?.get("dialogTitle") ?: "dialogTitle"
+            dialog.headerText = Localization.translations[currentLanguage]?.get("dialogHeaderText") ?: "dialogHeaderText"
+
+            val params = mutableMapOf<String, Any?>()
+            val parametersAndAnswers = mutableMapOf<String, TextField>()
+            val answersAndTypes = mutableMapOf<TextField, String>()
+            val vbox = VBox()
+            val mapByUnit = unit.makeMap()
+            for ((param, type) in getQuestionsForUnit()){
+                val question = "$param ($type)"
+                val answerField = TextField(mapByUnit[param].toString())
+                parametersAndAnswers[param] = answerField
+                answersAndTypes[answerField] = type
+                vbox.add(HBox(10.0, label(question), answerField))
+            }
+
+            val sendButton = Button("Send")
+            sendButton.action {
+                if(checkAnswers(answersAndTypes)){
+                    for ((param, ans) in parametersAndAnswers){
+                        params[param] = convertToNeededType(ans.text, answersAndTypes[ans])
+                    }
+                    dialog.close()
+                    futureResult.complete(params)
+                }
+            }
+            vbox.add(sendButton)
+            dialog.dialogPane.content = vbox
+            val cancelButton = ButtonType.CANCEL
+            dialog.dialogPane.buttonTypes.addAll(cancelButton)
+
+            dialog.dialogPane.lookupButton(cancelButton).addEventFilter(ActionEvent.ACTION) {
+                dialog.close()
+                futureResult.complete(null)
+            }
+            dialog.setOnCloseRequest {
+                dialog.close()
+                if (params.isNullOrEmpty()) futureResult.complete(null)
+            }
+
+            dialog.showAndWait()
+
+        }
+        else{
+            futureResult.complete(null)
+            val dialog = Dialog<List<String>>()
+            dialog.title = Localization.translations[currentLanguage]?.get("dialogTitle") ?: "dialogTitle"
+            dialog.headerText = Localization.translations[currentLanguage]?.get("dialogHeaderText") ?: "dialogHeaderText"
+
+            val vbox = VBox()
+            val mapByUnit = unit.makeMap()
+            for ((param, type) in getQuestionsForUnit()){
+                val question = "$param ($type)"
+                val paramField = Text(mapByUnit[param].toString())
+                vbox.add(HBox(10.0, label(question), paramField))
+            }
+
+            dialog.dialogPane.content = vbox
+            val cancelButton = ButtonType.CANCEL
+            dialog.dialogPane.buttonTypes.addAll(cancelButton)
+
+            dialog.dialogPane.lookupButton(cancelButton).addEventFilter(ActionEvent.ACTION) {
+                dialog.close()
+            }
+            dialog.setOnCloseRequest {
+                dialog.close()
+            }
+
+            dialog.showAndWait()
+        }
+        return futureResult.join()
+    }
+
 
     private fun getCollectionOfHumans() : MutableList<HumanBeing>{
         val updatedHumans = mutableListOf<HumanBeing>()
@@ -182,27 +193,6 @@ class MapView(val login: String = "11") : View() {
         else return humans
     }
 
-    private fun showTooltip(unit: HumanBeing, node: Node) {
-    val tooltip = Tooltip(unit.name.value)
-    tooltip.show(node, node.scene.window.x + node.localToScene(0.0, 0.0).x + node.scene.window.width, node.scene.window.y + node.localToScene(0.0, 0.0).y + node.scene.window.height)
-}
-
-
-    fun showUnitDetails(unit: HumanBeing) {
-        val alert = Alert(Alert.AlertType.INFORMATION).apply {
-            title = "Unit Details"
-            headerText = "Full Information"
-            contentText = "Name: ${unit.name}\n"}
-
-        val changeButtonType = ButtonType("Change")
-        alert.buttonTypes.add(changeButtonType)
-
-        val result = alert.showAndWait()
-        if (result.orElse(null) == changeButtonType) {
-            // Действия при нажатии кнопки "Change"
-            // Например, открытие окна или выполнение других действий
-        }
-    }
 
     private fun getHash(login: String) : ByteArray {
         val md = MessageDigest.getInstance("MD5")
@@ -222,8 +212,8 @@ class MapView(val login: String = "11") : View() {
     override fun onDock() {
         // Ограничь максимальный размер окна
         primaryStage.apply {
-            maxWidth = 1050.0
-            maxHeight = 1050.0
+            maxWidth = 1598.0
+            maxHeight = 863.0
         }
     }
 }
@@ -232,4 +222,11 @@ class MapView(val login: String = "11") : View() {
 
 
 
-class MapApp : App(MapView::class)
+class MapApp : App(MapView::class){
+    override fun start(stage: Stage) {
+        val mapView = MapView()
+        val scene = Scene(mapView.root)
+        stage.scene = scene
+        stage.show()
+    }
+}
