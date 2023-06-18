@@ -1,5 +1,6 @@
 package client
 
+import client.GUI.Map.MapApp
 import client.GUI.SignIn.AuthApp
 import tornadofx.launch
 import java.net.InetSocketAddress
@@ -13,7 +14,6 @@ import java.util.*
 const val timeToReconnect = 5000.toLong()
 const val delay = 3000.toLong()
 var success = true
-var ongoing = true
 var inputList = LinkedList<Map<String, Any?>>()
 var login = ""
 var HashedPassword = ""
@@ -33,5 +33,5 @@ val buffer = ByteBuffer.allocate(100*1024)
 fun main(){
     channel.configureBlocking(false)
     channel.register(selector, SelectionKey.OP_WRITE)
-    launch<AuthApp>()
+    launch<MapApp>()
 }
