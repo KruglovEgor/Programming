@@ -43,6 +43,7 @@ val buffer = ByteBuffer.allocate(100*1024)
 //todo make special phrases for map while checking parameters
 //todo show advices in dialog (about types)
 //todo add showButton on MainView
+//todo make multi-threading/coroutine for cases when server is unavailable
 
 
 fun main(){

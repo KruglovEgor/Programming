@@ -1,5 +1,7 @@
 package client.GUI.Localization
 
+import java.time.format.DateTimeFormatter
+
 class Localization {
     companion object {
         val translations = mapOf(
@@ -48,7 +50,22 @@ class Localization {
                 "backButton" to "Back"
             )
         )
+
+        val deltaTime = mapOf<String, Double>(
+            "ru" to 0.0,
+            "en" to 12.0
+        )
+
+        val dataFormatter = mapOf<String, DateTimeFormatter>(
+            "ru" to DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"),
+            "en" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        )
     }
+}
+
+
+fun getTypeOfData(language: String) : String{
+    return ""
 }
 
 

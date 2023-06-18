@@ -34,7 +34,8 @@ class HumanBeing(val id: Int, var name: String="DefaultName", var coordinate_x: 
         (map["coordinate_x"] as? Number ?: 0.0).toDouble(),
         (map["coordinate_y"] as? Number ?: 0.0).toFloat(),
         makeLocalDateTime(
-            map["creationDate"] as? String? ?: ("${LocalDateTime.now().year}-${LocalDateTime.now().monthValue}" +
+            map["creationDate"] as? String? ?: (
+                    "${LocalDateTime.now().year}-${LocalDateTime.now().monthValue}" +
                     "-${LocalDateTime.now().dayOfMonth} ${LocalDateTime.now().hour}:${LocalDateTime.now().minute}:${LocalDateTime.now().second}")
         ),
         map["realHero"] as? Boolean ?: false,

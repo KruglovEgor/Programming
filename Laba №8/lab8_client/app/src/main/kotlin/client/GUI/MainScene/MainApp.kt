@@ -11,12 +11,12 @@ import client.helping_functions.convertJSONtoListOfMapAndString
 import client.interactive.*
 import client.selector
 import client.serverAddress
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.layout.BorderPane
-import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
@@ -25,7 +25,9 @@ import javafx.stage.Stage
 import javafx.util.Duration
 import org.controlsfx.control.Notifications
 import server.base_classes.HumanBeing
+import server.base_classes.makeLocalDateTime
 import tornadofx.*
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
 
 class MainApp : App(MainView::class){
@@ -47,23 +49,32 @@ class MainView(language: String = "ru", login: String = "test") : View() {
     private val resultLabel: Label
     private val resultField: Text
     private val mapButton: Button
-    val table = vbox {
-    tableview(humans){
+    private var tableView = TableView<HumanBeing>()
+    var table = vbox {
+        tableView = tableview(humans){
         column("id", HumanBeing::id)
         column("name", HumanBeing::name)
         column("coordinate_x", HumanBeing::coordinate_x)
         column("coordinate_y", HumanBeing::coordinate_y)
-        column("creationDate", HumanBeing::creationDate)
+        column("creationDate", HumanBeing::creationDate) {
+            cellFormat {
+                val data = makeLocalDateTime(it)
+                val deltaTime = Localization.deltaTime[currentLanguage] ?: 0.0
+                val newData = data.plusHours(deltaTime.toLong())
+                text = newData.format(Localization.dataFormatter[currentLanguage])
+            }
+        }
         column("realHero", HumanBeing::realHero)
-        column("hasToothPick", HumanBeing::hasToothPick)
+        column("hasToothPick", HumanBeing::hasToothpick)
         column("impactSpeed", HumanBeing::impactSpeed)
         column("soundtrackName", HumanBeing::soundtrackName)
         column("minutesOfWaiting", HumanBeing::minutesOfWaiting)
         column("mood", HumanBeing::mood)
         column("car", HumanBeing::car)
         column("creator", HumanBeing::creator)
+        }
     }
-    }
+
 
     init {
         getCollection()
@@ -153,8 +164,8 @@ class MainView(language: String = "ru", login: String = "test") : View() {
             }
         }
 
+
         sendButton.action {
-            //todo finish command handler
             try {
                 val commandFromUser = commandField.text.trim()
                 if ((commandFromUser == "show") or (commandFromUser == "printAscending")) {
@@ -199,7 +210,6 @@ class MainView(language: String = "ru", login: String = "test") : View() {
         }
 
     }
-
 
     private fun dialogAboutParameters(neededParams: List<Pair<String, String>>) : MutableMap<String, Any?>? {
         val futureResult = CompletableFuture<MutableMap<String, Any?>?>()
@@ -287,8 +297,19 @@ class MainView(language: String = "ru", login: String = "test") : View() {
         commandLabel.text = getTranslation(currentLanguage, "commandLabel")
         sendButton.text = getTranslation(currentLanguage, "sendButton")
         mapButton.text = getTranslation(currentLanguage, "mapButton")
+        updateCreationDateColumn()
+        tableView.refresh()
     }
 
+    private fun updateCreationDateColumn(){
+        val creationDateColumn = tableView.columns.firstOrNull {  it.text == "creationDate"} as? TableColumn<HumanBeing, String>
+        creationDateColumn?.cellFormat {
+            val data = makeLocalDateTime(it)
+            val deltaTime = Localization.deltaTime[currentLanguage] ?: 0.0
+            val newData = data.plusHours(deltaTime.toLong())
+            text = newData.format(Localization.dataFormatter[currentLanguage])
+        }
+    }
 
 
 

@@ -1,6 +1,5 @@
 package server.base_classes
 
-import client.base_classes.Mood
 import javafx.beans.property.*
 import java.time.LocalDateTime
 
@@ -29,7 +28,7 @@ class HumanBeing(map: Map<String, Any?>) : Comparable<HumanBeing>  {
             "-${LocalDateTime.now().dayOfMonth} ${LocalDateTime.now().hour}:${LocalDateTime.now().minute}:${LocalDateTime.now().second}"))
 
     val realHero = SimpleBooleanProperty(map["realHero"] as? Boolean ?: false)
-    val hasToothPick = SimpleBooleanProperty(map["hasToothpick"] as? Boolean ?: false)
+    val hasToothpick = SimpleBooleanProperty(map["hasToothpick"] as? Boolean ?: false)
     val impactSpeed = SimpleLongProperty((map["impactSpeed"] as? Number)?.toLong() ?: 0)
     val soundtrackName = SimpleStringProperty( map["soundtrackName"] as? String ?: "DefaultSoundtrackName")
     val minutesOfWaiting = SimpleObjectProperty<Double?>(map["minutesOfWaiting"] as? Double?)
@@ -49,7 +48,7 @@ class HumanBeing(map: Map<String, Any?>) : Comparable<HumanBeing>  {
             "coordinate_y" to coordinate_y.value,
             "creationDate" to creationDate.value,
             "realHero" to realHero.value,
-            "hasToothPick" to hasToothPick.value,
+            "hasToothPick" to hasToothpick.value,
             "impactSpeed" to impactSpeed.value,
             "soundtrackName" to soundtrackName.value,
             "minutesOfWaiting" to minutesOfWaiting.value,
@@ -58,9 +57,7 @@ class HumanBeing(map: Map<String, Any?>) : Comparable<HumanBeing>  {
             "creator" to creator.value
         )
     }
-
 }
-
 
 
 
