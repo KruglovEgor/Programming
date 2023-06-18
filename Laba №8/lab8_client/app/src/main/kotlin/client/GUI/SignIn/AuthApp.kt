@@ -145,7 +145,20 @@ class AuthView(language : String = "ru") : View() {
         }
 
         authorizationButton.action {
-            sendAuthorization(loginField.text, passwordField.text)
+            if (loginField.text.isNotEmpty() && passwordField.text.isNotEmpty()){
+                sendAuthorization(loginField.text, passwordField.text)
+            } else{
+                Notifications.create()
+                    .title("Уведомление")
+                    .text(Localization.translations[currentLanguage]?.get("emptyFieldsException") ?: "emptyFieldsException")
+                    .owner(currentWindow)
+                    .hideAfter(Duration.seconds(2.0))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .darkStyle()
+                    .graphic(null)
+                    .show()
+            }
+
         }
 
     }

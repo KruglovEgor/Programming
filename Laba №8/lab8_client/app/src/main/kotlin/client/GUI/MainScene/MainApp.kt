@@ -2,6 +2,7 @@ package client.GUI.MainScene
 
 import client.GUI.Localization.Localization
 import client.GUI.Localization.getTranslation
+import client.GUI.Map.MapView
 import client.base_classes.Result
 import client.buffer
 import client.channel
@@ -45,6 +46,7 @@ class MainView(language: String = "ru", login: String = "test") : View() {
     private val humans = FXCollections.observableArrayList<HumanBeing>()
     private val resultLabel: Label
     private val resultField: Text
+    private val mapButton: Button
     val table = vbox {
     tableview(humans){
         column("id", HumanBeing::id)
@@ -123,11 +125,17 @@ class MainView(language: String = "ru", login: String = "test") : View() {
             alignment = Pos.CENTER
         }
 
+        mapButton = Button(Localization.translations[currentLanguage]?.get("mapButton") ?: "mapButton")
+        mapButton.action {
+            replaceWith(MapView(currentLanguage, login))
+        }
+        mapButton.apply { style{fontSize=18.px} }
 
 
         val centerPane = BorderPane().apply {
             top = commandBox
             center = table
+            bottom = mapButton
         }
 
         with(root) {
@@ -278,7 +286,7 @@ class MainView(language: String = "ru", login: String = "test") : View() {
         languageLabel.text = getTranslation(currentLanguage,"languageLabel")
         commandLabel.text = getTranslation(currentLanguage, "commandLabel")
         sendButton.text = getTranslation(currentLanguage, "sendButton")
-        resultField.text = currentLanguage
+        mapButton.text = getTranslation(currentLanguage, "mapButton")
     }
 
 

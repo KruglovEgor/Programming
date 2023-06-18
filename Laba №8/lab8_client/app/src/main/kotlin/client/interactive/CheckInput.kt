@@ -13,8 +13,8 @@ import client.helping_functions.readFromFileOrCreateFile
 fun getDescriptionOfHumanBeingFields(): Map<String, String>{
     val fields = mapOf(
         "name" to "String",
-        "coordinate_x" to "Double",
-        "coordinate_y" to "Float",
+        "coordinate_x" to "0<Double<1598",
+        "coordinate_y" to "0<Float<863",
         "realHero" to "Boolean",
         "hasToothpick" to "Boolean",
         "impactSpeed" to "Long",
@@ -95,7 +95,9 @@ fun checkType(type: String, input: String, printErrors: Boolean) : Boolean{
         "Long" to forInt,
         "Double?" to forDoubleNull,
         "String?" to forStringNull,
-        "Mood?" to forMoodNull
+        "Mood?" to forMoodNull,
+        "0<Double<1598" to forDouble,
+        "0<Float<863" to forFloat
     )
 
     val minValues = getMinValues()
@@ -136,7 +138,7 @@ fun checkMinAndMaxValue(input:String, type: String) : Boolean{
     if (input.isEmpty() and type.endsWith('?')){
         return true
     }
-    else if (type in listOf("Double", "Double?", "Float", "Float?", "Long", "Long?", "Int", "Int?")){
+    else if (type in listOf("Double", "Double?", "Float", "Float?", "Long", "Long?", "Int", "Int?", "0<Double<1598", "0<Float<863")){
         val inputAsBigDecimal = input.toBigDecimal()
         when(type){
             in listOf("Double", "Double?") -> {
@@ -151,6 +153,8 @@ fun checkMinAndMaxValue(input:String, type: String) : Boolean{
             in listOf("Int", "Int?") -> {
                 return !((inputAsBigDecimal.compareTo(Int.MAX_VALUE.toBigDecimal()) == 1 ) or (inputAsBigDecimal.compareTo((-1*Int.MAX_VALUE+1).toBigDecimal()) == -1))
             }
+            "0<Double<1598" -> return (inputAsBigDecimal >= 0.0.toBigDecimal() && inputAsBigDecimal <= 1598.0.toBigDecimal())
+            "0<Float<863" -> return (inputAsBigDecimal >= 0.0.toBigDecimal() && inputAsBigDecimal <= 863.0.toBigDecimal())
         }
     }
     return true
@@ -239,6 +243,8 @@ fun convertToNeededType(input: String?, type: String?): Any?{
         "Double?" -> convertedInput?.toDouble()
         "String?" -> convertedInput
         "Mood?" ->  convertedInput?.let { Mood.valueOf(it) }
+        "0<Double<1598" -> convertedInput?.toDouble()
+        "0<Float<863" -> convertedInput?.toFloat()
         else -> throw IllegalArgumentException("Unsupported type: $type")
     }
     return output

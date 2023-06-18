@@ -1,46 +1,13 @@
 package client.interactive
 
-import client.exceptions.NoSuchCommandException
 import client.helping_functions.convertJSONtoMapOfStringAndAny
 import java.io.File
 import client.helping_functions.readFromFile
 import client.inputList
 
-/**
- * Execute user's commands
- *
- * @param input : String - input from User
- */
-//fun listenToUser(input: String) :  MutableMap<String, Any?> {
-//    try {
-//        val map = commandHandler(input)
-//        map["isNull"] = false
-//        return map
-//    } catch (e: Exception){
-//        e.message?.let { println(it) }
-//        return mutableMapOf("isNull" to true)
-//    }
-//}
 
 
-/**
- * Start asking User parameters for his command
- *
- * @param commandFromUser : String - command what User entered
- *
- * @return List<Any> = ['command', 'map with parameters']
- */
-//fun commandHandler(commandFromUser: String) : MutableMap<String, Any?>{
-//    val listOfParametersOfCommands = getParametersOfCommands()
-//    val mapOfCommandAndParametersFromUser = mutableMapOf<String, Any?>()
-//    if (checkIfCommandExists(commandFromUser)){
-//        mapOfCommandAndParametersFromUser["command"] = commandFromUser
-//        val params = getParameters(listOfParametersOfCommands[commandFromUser] as List<Any>)
-//        mapOfCommandAndParametersFromUser["params"] = params
-//        return mapOfCommandAndParametersFromUser
-//    }
-//    else throw NoSuchCommandException()
-//}
+
 
 /**
  * Asks User to enter the value of needed type
@@ -60,52 +27,7 @@ fun getParameters(listOfDescriptionAndType: List<Any>) : List<Pair<String, Strin
         listOfParamPairs.add(Pair(description, type))
     }
     return  listOfParamPairs }
-//        if((description == "unit") and (type == "Map")){
-//            val parametersOfHumanBeing = getParametersOfHumanBeing()
-//            for(key in parametersOfHumanBeing.keys){
-//                map[key] = parametersOfHumanBeing[key]
-//            }
-//        }
-//        else if(type == "Path"){
-//            map[description] = getPathToScript()
-//        }
-//        else{
-//            println("Please enter the $type:")
-//            var input = readln()
-//            while (!checkType(type, input, true)){
-//                input = readln()
-//            }
-//            map[description] = convertToNeededType(input, type)
-//        }
-//    }
-//
-//    return map
-//}
 
-/**
- * Ask User to enter values of HumanBeing's fields
- *
- * @return Map<String, Any?> with pairs of 'field' : 'value'
- */
-fun getParametersOfHumanBeing() : Map<String, Any?>{
-    val fields = getDescriptionOfHumanBeingFields()
-    val map = mutableMapOf<String, Any?>()
-    val coordinates = mutableListOf<Any?>()
-    for (field in fields.keys){
-        println("Please, enter the $field. It must be ${fields[field]}!")
-        var input = readln()
-        while (! checkType(fields[field].toString(), input, true)){
-            input = readln()
-        }
-        if(field.startsWith("coordinate")){
-            coordinates.add(convertToNeededType(input, fields[field]))
-        } else{
-            map[field] = convertToNeededType(input, fields[field])
-        }
-    }
-    map["coordinates"] = coordinates
-    return map
-}
 
 /**
  * Ask User to enter path to txt file with script

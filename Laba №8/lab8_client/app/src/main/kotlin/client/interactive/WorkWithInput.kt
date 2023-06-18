@@ -5,8 +5,8 @@ import javafx.scene.control.TextField
 fun getQuestionsForUnit() : List<Pair<String, String>>{
     return listOf(
         Pair("name", "String"),
-        Pair("coordinate_x", "Double"),
-        Pair("coordinate_y", "Float"),
+        Pair("coordinate_x", "0<Double<1598"),
+        Pair("coordinate_y", "0<Float<863"),
         Pair("realHero", "Boolean"),
         Pair("hasToothpick", "Boolean"),
         Pair("impactSpeed", "Long"),

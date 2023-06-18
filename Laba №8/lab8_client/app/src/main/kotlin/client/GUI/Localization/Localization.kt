@@ -20,7 +20,10 @@ class Localization {
                 "resultLabel" to "Результат:",
                 "dialogTitle" to "Параметры",
                 "dialogHeaderText" to "Пожалуйста, введите параметры!",
-                "noSuchCommand" to "Нет такой команды!"
+                "noSuchCommand" to "Нет такой команды!",
+                "emptyFieldsException" to "Поля не должны быть пустыми!",
+                "mapButton" to "Перейти к карте",
+                "backButton" to "Назад"
             ),
             "en" to mapOf(
                 "auth" to "Authorization",
@@ -39,7 +42,10 @@ class Localization {
                 "resultLabel" to "Result:",
                 "dialogTitle" to "Parameters",
                 "dialogHeaderText" to "Please, enter the parameters!",
-                "noSuchCommand" to "There is no such command!"
+                "noSuchCommand" to "There is no such command!",
+                "emptyFieldsException" to "Fields can't be empty!",
+                "mapButton" to "Go to map",
+                "backButton" to "Back"
             )
         )
     }

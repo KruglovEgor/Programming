@@ -76,3 +76,7 @@ sourceSets {
         }
     }
 }
+
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

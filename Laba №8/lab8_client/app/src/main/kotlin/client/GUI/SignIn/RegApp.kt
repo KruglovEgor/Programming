@@ -139,7 +139,19 @@ class RegView(language: String = "ru") : View() {
         }
 
         registrationButton.action {
-            sendRegistration(loginField.text, passwordField.text)
+            if (loginField.text.isNotEmpty() && passwordField.text.isNotEmpty()){
+                sendRegistration(loginField.text, passwordField.text)
+            } else{
+                Notifications.create()
+                    .title("Уведомление")
+                    .text(Localization.translations[currentLanguage]?.get("emptyFieldsException") ?: "emptyFieldsException")
+                    .owner(currentWindow)
+                    .hideAfter(Duration.seconds(2.0))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .darkStyle()
+                    .graphic(null)
+                    .show()
+            }
         }
 
     }
