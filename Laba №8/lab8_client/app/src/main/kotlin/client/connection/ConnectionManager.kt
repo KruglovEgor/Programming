@@ -128,41 +128,41 @@ fun ping(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: Datagram
 }
 
 
-fun signUp(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, selector: Selector){
-    var answer = ""
-    while ((answer != "login") and (answer != "register")){
-        println("Choose: 'login' or 'register'")
-        answer = readln().trim()
-    }
-
-    println("Please, enter your username:")
-    login = readln().trim()
-    while (login.isEmpty()){
-        println("Login can't be empty!")
-        println("Please, enter your username:")
-        login = readln().trim()
-    }
-    println("Please, enter your password")
-    var password = readln().trim()
-    while (password.isEmpty()){
-        println("Password can't be empty!")
-        println("Please, enter your password:")
-        password = readln().trim()
-    }
-    HashedPassword = DigestUtils.sha512Hex(password)
-    val dataToSend = mapOf(
-        "type" to answer,
-        "login" to login,
-        "password" to HashedPassword
-    )
-    val response = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, dataToSend, selector)
-    if (!success){
-        signUp(serverAddress, buffer, channel, selector)
-    }
-    else {
-        println(response["result"])
-    }
-}
+//fun signUp(serverAddress: InetSocketAddress, buffer: ByteBuffer, channel: DatagramChannel, selector: Selector){
+//    var answer = ""
+//    while ((answer != "login") and (answer != "register")){
+//        println("Choose: 'login' or 'register'")
+//        answer = readln().trim()
+//    }
+//
+//    println("Please, enter your username:")
+//    login = readln().trim()
+//    while (login.isEmpty()){
+//        println("Login can't be empty!")
+//        println("Please, enter your username:")
+//        login = readln().trim()
+//    }
+//    println("Please, enter your password")
+//    var password = readln().trim()
+//    while (password.isEmpty()){
+//        println("Password can't be empty!")
+//        println("Please, enter your password:")
+//        password = readln().trim()
+//    }
+//    HashedPassword = DigestUtils.sha512Hex(password)
+//    val dataToSend = mapOf(
+//        "type" to answer,
+//        "login" to login,
+//        "password" to HashedPassword
+//    )
+//    val response = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, dataToSend, selector)
+//    if (!success){
+//        signUp(serverAddress, buffer, channel, selector)
+//    }
+//    else {
+//        println(response["result"])
+//    }
+//}
 
 
 

@@ -1,16 +1,13 @@
 package client.GUI.MainScene
 
+import client.*
 import client.GUI.Localization.Localization
 import client.GUI.Localization.getTranslation
 import client.GUI.Map.MapView
 import client.base_classes.Result
-import client.buffer
-import client.channel
 import client.connection.sendAndReceiveDataWithCheckingValidity
 import client.helping_functions.convertJSONtoListOfMapAndString
 import client.interactive.*
-import client.selector
-import client.serverAddress
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
@@ -39,7 +36,7 @@ class MainApp : App(MainView::class){
 }
 
 
-class MainView(language: String = "ru", login: String = "test") : View() {
+class MainView(language: String = "ru", val login: String = "test") : View() {
     override val root = BorderPane()
     private var currentLanguage = language
     private val languageLabel: Label
@@ -242,13 +239,39 @@ class MainView(language: String = "ru", login: String = "test") : View() {
 
         val sendButton = Button("Send")
         sendButton.action {
-            if(checkAnswers(answersAndTypes)){
+            if(answersAndTypes.size == 1 && answersAndTypes.values.first() == "Path"){
+                if (checkPathForExecuteScript(answersAndTypes.keys.first().text)){
+                    executeScript(answersAndTypes.keys.first().text, currentLanguage, currentWindow, login)
+                    println(inputList)
+                    for (map in inputList){
+
+                        val response = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, map+ mapOf("type" to "exec_command"), selector)
+                        resultField.text = response["result"].toString()
+                    }
+                    dialog.close()
+                    futureResult.complete(null)
+                }
+                else{
+                    Notifications.create()
+                        .title("Уведомление")
+                        .text(Localization.translations[currentLanguage]?.get("cantReadFileException") ?: "cantReadFileException")
+                        .owner(currentWindow)
+                        .hideAfter(Duration.seconds(10.0))
+                        .position(Pos.BOTTOM_RIGHT)
+                        .darkStyle()
+                        .graphic(null)
+                        .show()
+                }
+            }
+
+            else if(checkAnswers(answersAndTypes)){
                 for ((param, ans) in parametersAndAnswers){
                     params[param] = convertToNeededType(ans.text, answersAndTypes[ans])
                 }
                 dialog.close()
                 futureResult.complete(params)
             }
+
         }
         vbox.add(sendButton)
         dialog.dialogPane.content = vbox

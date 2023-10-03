@@ -1,6 +1,5 @@
 package client
 
-import client.GUI.Map.MapApp
 import client.GUI.SignIn.AuthApp
 import tornadofx.launch
 import java.net.InetSocketAddress
@@ -15,7 +14,6 @@ const val timeToReconnect = 5000.toLong()
 const val delay = 3000.toLong()
 var success = true
 var inputList = LinkedList<Map<String, Any?>>()
-var login = ""
 var HashedPassword = ""
 
 
@@ -32,15 +30,12 @@ val buffer = ByteBuffer.allocate(100*1024)
 
 
 // important
-//todo make execute_script
 //todo translate help (send version in different languages)
 
 
 //will be nice
-//todo make animation for map
-//todo dont send execute_script
 //todo maybe in case of update put the values of existing unit in dialog
-//todo make special phrases for map while checking parameters
+//todo if update person on MapView also update info about it (on click)
 //todo show advices in dialog (about types)
 //todo add showButton on MainView
 //todo make multi-threading/coroutine for cases when server is unavailable

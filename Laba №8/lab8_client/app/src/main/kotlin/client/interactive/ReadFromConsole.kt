@@ -1,11 +1,14 @@
 package client.interactive
 
+import client.GUI.Localization.Localization
 import client.helping_functions.convertJSONtoMapOfStringAndAny
 import java.io.File
 import client.helping_functions.readFromFile
 import client.inputList
-
-
+import javafx.geometry.Pos
+import javafx.stage.Window
+import javafx.util.Duration
+import org.controlsfx.control.Notifications
 
 
 
@@ -34,17 +37,16 @@ fun getParameters(listOfDescriptionAndType: List<Any>) : List<Pair<String, Strin
  *
  * @return String with data from this file
  */
-fun getPathToScript() : String{
-    println("Please enter the absolute path to the file.txt with command for execution: ")
-    var usersPath = readln().trim()
-    var file = File(usersPath)
-    while (!file.exists() or (file.extension != "txt")){
-        println("It's a wrong file. Please enter another path:")
-        usersPath = readln().trim()
-        file = File(usersPath)
-    }
 
-    val txt = readFromFile(usersPath)
+fun checkPathForExecuteScript(path: String) : Boolean{
+    val file = File(path.trim())
+    if(!file.exists() or (file.extension != "txt")) return false
+    else return true
+}
+
+fun executeScript(path : String, currentLanguage: String, currentWindow: Window?, login: String) {
+
+    val txt = readFromFile(path)
     val listOfLines = txt.trim().split("\r\n")
     for(i in listOfLines.indices){
         var metExecuteScript = false
@@ -70,6 +72,9 @@ fun getPathToScript() : String{
                             val neededType = (neededParams[j] as String).split(" ")[1]
                             if (!checkType(neededType, params[nameInMap].toString(), false)) validity = false
                         }
+                        else{
+                            params["creator"] = login
+                        }
                     }
                 }
             } else validity = false
@@ -78,7 +83,17 @@ fun getPathToScript() : String{
                 inputList.add(mapOf("command" to commandName, "params" to params))
             }
         }
-        if (metExecuteScript) println("In file was command execute_script. It may cause the infinity loop, so please enter it by yourself if you want to execute it.")
+        if (metExecuteScript) {
+            Notifications.create()
+                .title("Уведомление")
+                .text(Localization.translations[currentLanguage]?.get("metExecuteScript") ?: "metExecuteScript")
+                .owner(currentWindow)
+                .hideAfter(Duration.seconds(10.0))
+                .position(Pos.BOTTOM_RIGHT)
+                .darkStyle()
+                .graphic(null)
+                .show()
+        }
+        }
     }
-    return ""
-}
+

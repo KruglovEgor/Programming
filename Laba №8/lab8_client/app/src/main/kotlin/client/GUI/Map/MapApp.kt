@@ -12,7 +12,9 @@ import client.interactive.*
 import client.selector
 import client.serverAddress
 import javafx.animation.KeyFrame
+import javafx.animation.KeyValue
 import javafx.animation.Timeline
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.geometry.Pos
@@ -38,6 +40,7 @@ class MapView(language: String = "ru", val login: String = "test") : View() {
     private var humans = mutableListOf<HumanBeing>()
     private val humanImage = Image("color_human_small.png")
     private val mapImage = Image("map.png")
+    private val humanSize = humanImage.width
     private var currentLanguage = language
     private val backButton = Button(Localization.translations[currentLanguage]?.get("backButton") ?: "backButton")
     private val languageLabel = Label(Localization.translations[currentLanguage]?.get("languageLabel") ?: "languageLabel")
@@ -50,13 +53,64 @@ class MapView(language: String = "ru", val login: String = "test") : View() {
     }
 
     init {
-        setMap()
-        root.alignment = Pos.TOP_LEFT
+        startAnimation()
         val timeline = Timeline(
-            KeyFrame(Duration.seconds(3.0), { setMap()
+            KeyFrame(Duration.seconds(3.0), {
+                startAnimation()
             })
         )
         timeline.cycleCount = Timeline.INDEFINITE
+        timeline.play()
+    }
+
+    private fun startAnimation(){
+        val updatedHumans = getCollectionOfHumans()
+        val added = updatedHumans.filter { newHuman ->
+            humans.none { it.id.value == newHuman.id.value }
+        }
+        val removed = humans.filter { oldHuman ->
+            updatedHumans.none { it.id.value == oldHuman.id.value }
+        }
+
+        if (added.isNotEmpty() || removed.isNotEmpty()){
+            playAnimation(added, removed)
+        }
+        humans = updatedHumans
+    }
+
+    private fun playAnimation(added: List<HumanBeing>, removed: List<HumanBeing>){
+        val currentSize = SimpleDoubleProperty(0.0)
+        val timeline = Timeline(
+            KeyFrame(Duration.ZERO, KeyValue(currentSize, 1)),
+            KeyFrame(1.seconds, KeyValue(currentSize, humanSize))
+        )
+
+        timeline.currentTimeProperty().addListener { _, _, _ ->
+            root.clear()
+            root.alignment = Pos.TOP_LEFT
+            val vBox = VBox(0.0)
+            vBox.children.add(getToolbar())
+            val group = Group()
+            val map = imageview(mapImage)
+            group.children.add(map)
+            humans.filter { !added.contains(it) }.forEach {
+                val pair = drawHuman(it, humanSize)
+                group.add(pair.first)
+                group.add(pair.second)
+            }
+            added.forEach { human ->
+                val pair = drawHuman(human, currentSize.value)
+                group.add(pair.first)
+                group.add(pair.second)
+            }
+            removed.forEach { human ->
+                val pair = drawHuman(human, humanSize-currentSize.value)
+                group.add(pair.first)
+                group.add(pair.second)
+            }
+            vBox.children.add(group)
+            root.add(vBox)
+        }
         timeline.play()
     }
 
@@ -109,64 +163,54 @@ class MapView(language: String = "ru", val login: String = "test") : View() {
         languageLabel.text = getTranslation(currentLanguage, "languageLabel")
     }
 
-    private fun setMap(){
-        root.clear()
-        val vBox = VBox(0.0)
-        vBox.children.add(getToolbar())
-        val group = Group()
-        val map = imageview(mapImage)
-        group.children.add(map)
-        humans=getCollectionOfHumans()
-        for (human in humans){
-            val imageview = imageview(humanImage)
+    private fun drawHuman(human: HumanBeing, size: Double) : Pair<Rectangle, ImageView>{
+        val imageview = imageview(humanImage)
 
-            imageview.setOnMouseClicked {
-                val map = mutableMapOf<String, Any?>()
-                map["type"] = "exec_command"
-                map["command"] = "update"
-                map["params"] = mutableMapOf<String, Any?>()
-                val parametersFromClient = dialogAboutParameters(human, login)
-                if (!(parametersFromClient.isNullOrEmpty())) {
-                    parametersFromClient.forEach { (key, value) -> (map["params"] as MutableMap<String, Any?>)[key] = value }
-                    (map["params"]as MutableMap<String, Any?>)["creator"] = login
-                    (map["params"]as MutableMap<String, Any?>)["id"] = human.id.value
-                    val response = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, map, selector)
-                    Notifications.create()
-                        .title("Уведомление")
-                        .text(response["result"].toString())
-                        .owner(currentWindow)
-                        .hideAfter(Duration.seconds(5.0))
-                        .position(Pos.BOTTOM_RIGHT)
-                        .darkStyle()
-                        .graphic(null)
-                        .show()
-                }
+        imageview.setOnMouseClicked {
+            val map = mutableMapOf<String, Any?>()
+            map["type"] = "exec_command"
+            map["command"] = "update"
+            map["params"] = mutableMapOf<String, Any?>()
+            val parametersFromClient = dialogAboutParameters(human, login)
+            if (!(parametersFromClient.isNullOrEmpty())) {
+                parametersFromClient.forEach { (key, value) -> (map["params"] as MutableMap<String, Any?>)[key] = value }
+                (map["params"]as MutableMap<String, Any?>)["creator"] = login
+                (map["params"]as MutableMap<String, Any?>)["id"] = human.id.value
+                val response = sendAndReceiveDataWithCheckingValidity(serverAddress, buffer, channel, map, selector)
+                Notifications.create()
+                    .title("Уведомление")
+                    .text(response["result"].toString())
+                    .owner(currentWindow)
+                    .hideAfter(Duration.seconds(5.0))
+                    .position(Pos.BOTTOM_RIGHT)
+                    .darkStyle()
+                    .graphic(null)
+                    .show()
             }
-
-            imageview.xProperty().bind(human.coordinate_x)
-            imageview.yProperty().bind(human.coordinate_y)
-            imageview.tooltip { "${human.id.value}\n${human.name.value}\n(${human.coordinate_x.value},${human.coordinate_y.value})\n${human.creator.value}" }
-            val bgRectangle = Rectangle().apply{
-                width = imageview.boundsInParent.width
-                height = imageview.boundsInParent.height
-                x=imageview.x
-                y=imageview.y
-                fill = Color.TRANSPARENT
-                fill=getColorFromHash(getHash(human.creator.value))
-            }
-            group.children.add(bgRectangle)
-            group.children.add(imageview)
         }
-        vBox.children.add(group)
-        root.add(vBox)
+
+        imageview.xProperty().bind(human.coordinate_x)
+        imageview.yProperty().bind(human.coordinate_y)
+        imageview.fitWidth = size
+        imageview.fitHeight = size
+        imageview.tooltip { "${human.id.value}\n${human.name.value}\n(${human.coordinate_x.value},${human.coordinate_y.value})\n${human.creator.value}" }
+        val bgRectangle = Rectangle().apply{
+            width = imageview.boundsInParent.width
+            height = imageview.boundsInParent.height
+            x=imageview.x
+            y=imageview.y
+            fill = Color.TRANSPARENT
+            fill=getColorFromHash(getHash(human.creator.value))
+        }
+        return Pair(bgRectangle, imageview)
     }
 
     private fun dialogAboutParameters(unit: HumanBeing, login: String) : MutableMap<String, Any?>?{
         val futureResult = CompletableFuture<MutableMap<String, Any?>?>()
         if (unit.creator.value == login){
             val dialog = Dialog<List<String>>()
-            dialog.title = Localization.translations[currentLanguage]?.get("dialogTitle") ?: "dialogTitle"
-            dialog.headerText = Localization.translations[currentLanguage]?.get("dialogHeaderText") ?: "dialogHeaderText"
+            dialog.title = Localization.translations[currentLanguage]?.get("dialogTitleCanChange") ?: "dialogTitleCanChange"
+            dialog.headerText = Localization.translations[currentLanguage]?.get("dialogHeaderCanChange") ?: "dialogHeaderCanChange"
 
             val params = mutableMapOf<String, Any?>()
             val parametersAndAnswers = mutableMapOf<String, TextField>()
@@ -218,8 +262,8 @@ class MapView(language: String = "ru", val login: String = "test") : View() {
         else{
             futureResult.complete(null)
             val dialog = Dialog<List<String>>()
-            dialog.title = Localization.translations[currentLanguage]?.get("dialogTitle") ?: "dialogTitle"
-            dialog.headerText = Localization.translations[currentLanguage]?.get("dialogHeaderText") ?: "dialogHeaderText"
+            dialog.title = Localization.translations[currentLanguage]?.get("dialogTitleCantChange") ?: "dialogTitleCantChange"
+            dialog.headerText = Localization.translations[currentLanguage]?.get("dialogHeaderCantChange") ?: "dialogHeaderCantChange"
 
             val vbox = VBox()
             val mapByUnit = unit.makeMap()
